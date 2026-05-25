@@ -21,6 +21,10 @@ public class Personaje {
 	double bordeD;
 	double bordeI;
 	int contSaltos;
+<<<<<<< HEAD
+=======
+	int vidas;
+>>>>>>> b3901df (actualizacion sistema de vidas)
 	Entorno e;
 	
 	public Personaje(Entorno e) {
@@ -45,6 +49,10 @@ public class Personaje {
 		this.estaTocandoPiso = false;
 		this.saltando = false;
 		this.contSaltos = 0;
+<<<<<<< HEAD
+=======
+		this.vidas = 6;
+>>>>>>> b3901df (actualizacion sistema de vidas)
 	}
 	// Funcion que muestra al personaje (cambia segun la direccion del mismo.)
 	public void dibujar(Entorno e) {
@@ -111,4 +119,13 @@ public class Personaje {
 		
 		
 	}
+<<<<<<< HEAD
+=======
+	
+	public void perderVida() {
+
+	    vidas--;
+
+	}
+>>>>>>> b3901df (actualizacion sistema de vidas)
 }

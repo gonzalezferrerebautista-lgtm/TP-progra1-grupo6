@@ -13,6 +13,10 @@ public class Juego extends InterfaceJuego {
 	// Variables y métodos propios de cada grupo
 	// ...
 	Personaje per;
+<<<<<<< HEAD
+=======
+	Vidas[] corazones;
+>>>>>>> b3901df (actualizacion sistema de vidas)
 	Fondo fon;
 	Isla[][] islas;
 	Enemigo[][] enemigos;
@@ -23,6 +27,7 @@ public class Juego extends InterfaceJuego {
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
 
 		// Inicializar lo que haga falta para el juego
+<<<<<<< HEAD
 		// ...
 		this.per = new Personaje(entorno); // Inicializamos el personaje
 		this.fon = new Fondo(entorno); // Inicializamos el fondo
@@ -54,6 +59,35 @@ public class Juego extends InterfaceJuego {
 				if (Math.abs(x-this.per.x) < 300 && (i == 0||i == 1)) {
 					x+=500;
 				}
+=======
+		this.per = new Personaje(entorno); 					// Inicializamos el personaje
+		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
+		this.islas = new Isla[4][6];
+		int[] tamañoIsla = { 200, 300, 400, 500 };
+		for (int i = 0; i < islas.length; i++) { 			// Recorre los niveles
+			double y = (i + 1) * 170;
+			for (int j = 0; j < islas[i].length; j++) { 	// Recorre la cantidad de islas
+				
+						
+				double separacion = 700;					
+	
+				double r = new Random().nextInt((int) ((this.fon.ancho)/separacion*100));
+
+				r/=100;
+				
+
+				double x = (300 + separacion * r); 
+				
+				int a = new Random().nextInt(4);	
+
+				// Si la distancia entre el personaje y la isla es menor a 300, y la isla es de las capas superiores,
+				// la isla es movida automaticamente .
+				if (Math.abs(x-this.per.x) < 300 && (i == 0||i == 1)) {
+					x+=500;
+				}
+				
+				
+>>>>>>> b3901df (actualizacion sistema de vidas)
 				islas[i][j] =  new Isla(x, y, tamañoIsla[a], 50);
 				if (j == 0 && i == 1) {
 					islas[i][j] =  new Isla(this.per.x, y, tamañoIsla[1], 50);
@@ -62,6 +96,14 @@ public class Juego extends InterfaceJuego {
 
 			}
 		}
+<<<<<<< HEAD
+=======
+		this.corazones = new Vidas[per.vidas];
+		for(int i = 0; i < corazones.length; i++) {
+			corazones[i] = new Vidas(40 + i * 80, 30);
+		}
+		
+>>>>>>> b3901df (actualizacion sistema de vidas)
 		/*this.enemigos = new Enemigo[4][6];
 		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles		
 			for (int j = 0; j < enemigos[i].length; j++) {
@@ -82,11 +124,23 @@ public class Juego extends InterfaceJuego {
 	 */
 
 	public void tick() {
+<<<<<<< HEAD
+=======
+		if(per.vidas <= 0) {
+			int tamañoFuente = 70;
+			entorno.cambiarFont("Arial", tamañoFuente, Color.white);
+			entorno.escribirTexto("PERDISTE", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+			return;
+		}
+>>>>>>> b3901df (actualizacion sistema de vidas)
 		// Procesamiento de un instante de tiempo
 		
 		fon.dibujar(entorno); // Dibuja el fondo
 		per.dibujar(entorno); // Dibuja el personaje
+<<<<<<< HEAD
 		
+=======
+>>>>>>> b3901df (actualizacion sistema de vidas)
 		for (int i = 0; i < islas.length; i++) { // Recorre los niveles
 			for (int j = 0; j < islas[i].length; j++) {
 				islas[i][j].dibujar(entorno);
@@ -98,6 +152,14 @@ public class Juego extends InterfaceJuego {
 				enemigos[i][j].mover();
 			}
 		}*/
+<<<<<<< HEAD
+=======
+		
+		for(int i = 0; i < per.vidas; i++) {
+			corazones[i].dibujar(entorno);
+		}
+		
+>>>>>>> b3901df (actualizacion sistema de vidas)
 		per.caer(); // Llama a la funcion caer() del personaje que lo hace caer cuando no esta
 					// tocando el piso.
 
@@ -113,6 +175,22 @@ public class Juego extends InterfaceJuego {
 		}
 		per.actualizarBordes(); // Llama a la funcion actualizarBordes() del personaje que actualiza sus bordes
 								// constantemente.
+<<<<<<< HEAD
+=======
+		
+		if(per.piso > entorno.alto()) {
+
+		    per.vidas--;
+
+		    per.x = 100;
+		    per.y = 100;
+
+		    per.saltando = false;
+		    per.contSaltos = 0;
+		}
+		
+		
+>>>>>>> b3901df (actualizacion sistema de vidas)
 		tocoPiso(per, islas); // Llama a la funcion tocoPiso(per, is) que detecta si el personaje esta tocando
 								// alguna isla y si es asi cambia su variable de instancia.
 		arregloVisual(per, islas);
