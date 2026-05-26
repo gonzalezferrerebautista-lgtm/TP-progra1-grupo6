@@ -13,10 +13,7 @@ public class Juego extends InterfaceJuego {
 	// Variables y métodos propios de cada grupo
 	// ...
 	Personaje per;
-<<<<<<< HEAD
-=======
 	Vidas[] corazones;
->>>>>>> b3901df (actualizacion sistema de vidas)
 	Fondo fon;
 	Isla[][] islas;
 	Enemigo[][] enemigos;
@@ -27,39 +24,6 @@ public class Juego extends InterfaceJuego {
 		this.entorno = new Entorno(this, "Proyecto para TP", 1280, 720);
 
 		// Inicializar lo que haga falta para el juego
-<<<<<<< HEAD
-		// ...
-		this.per = new Personaje(entorno); // Inicializamos el personaje
-		this.fon = new Fondo(entorno); // Inicializamos el fondo
-		/*
-		 * this.is = new Isla( 300, 700, 200, 50); // Inicializamos la isla / las islas
-		 * this.is2 = new Isla(300, 600, 300, 50); // Inicializamos la isla / las islas
-		 * this.is3 = new Isla(300, 500, 400, 50); // Inicializamos la isla / las islas
-		 * this.is4 = new Isla(300, 400, 500, 50); // Inicializamos la isla / las islas
-		 */
-
-		this.islas = new Isla[4][6];
-		int[] tamañoIsla = { 200, 300, 400, 500 };
-
-		for (int i = 0; i < islas.length; i++) { // Recorre los niveles
-			int y = (i + 1) * 170;
-			
-
-			for (int j = 0; j < islas[i].length; j++) {
-				
-	
-				double separacion = 700;
-				double r = new Random().nextInt((int) (this.fon.ancho/separacion*10));
-				r/=10;
-				System.out.println();
-				int x = (int) (300 + separacion * r); // (300, 3840) 300+700*5.2
-
-				int a = new Random().nextInt(4);
-
-				if (Math.abs(x-this.per.x) < 300 && (i == 0||i == 1)) {
-					x+=500;
-				}
-=======
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
 		this.islas = new Isla[4][6];
@@ -68,27 +32,36 @@ public class Juego extends InterfaceJuego {
 			double y = (i + 1) * 170;
 			for (int j = 0; j < islas[i].length; j++) { 	// Recorre la cantidad de islas
 				
-						
-				double separacion = 700;					
+				double base = 300;							// Limite menor de la coordenada x.
+				double separacion = 700;					// Separacion promedio entre las islas
 	
-				double r = new Random().nextInt((int) ((this.fon.ancho)/separacion*100));
-
+				// Genera un numero aleatorio entre 0 y la cantidad de islas que entran en el fondo * 10.
+				// Ejemplo: Si el fondo es de 3000-300 y la separacion de 700, entran 3,85 islas. *100 = 385.
+				// entonces genera un numero entre 0 y 385.
+				double r = new Random().nextInt((int) ((this.fon.ancho-base)/separacion*100));
+				
+				// Divide el numero entre 100. La idea es que el numero aleatorio este entre 0 y 3,85 siguiendo el caso anterior.
 				r/=100;
 				
-
-				double x = (300 + separacion * r); 
+				// Determina la coordenada x de la isla, que va a estar entre 300 y el ancho del fondo.
+				// La base es +300, y la variable es separacion * r que puede ser un numero entre 0 y el ancho
+				// del fondo, de manera aleatoria.
+				// NO SE PUEDE PASAR DEL ANCHO DE LA ISLA porque el calculo de r lo limita. En el caso mas extremo, 
+				// estará en el borde
+				double x = (300 + separacion * r); // [300, 3000] 300+700*x con  0 < x < 3,85 .  300+700*3,85 = 2995
 				
-				int a = new Random().nextInt(4);	
+				int a = new Random().nextInt(4);	// Numero aleatorio que determina el tamaño de la isla, 0 mas chico, 3 mas grande.
 
 				// Si la distancia entre el personaje y la isla es menor a 300, y la isla es de las capas superiores,
-				// la isla es movida automaticamente .
+				// la isla es movida automaticamente por la separacion. Esto se debe a que ya hay una isla
+				// ubicada en ese lugar creada intencionalmente.
 				if (Math.abs(x-this.per.x) < 300 && (i == 0||i == 1)) {
-					x+=500;
+					x+=separacion;
 				}
 				
+				islas[i][j] =  new Isla(x, y, tamañoIsla[a], 50);	// Se invoca a la isla.
 				
->>>>>>> b3901df (actualizacion sistema de vidas)
-				islas[i][j] =  new Isla(x, y, tamañoIsla[a], 50);
+				// Si la isla es la primera en la segunda capa, se genera justo en la coordenada x del personaje.
 				if (j == 0 && i == 1) {
 					islas[i][j] =  new Isla(this.per.x, y, tamañoIsla[1], 50);
 				}
@@ -96,14 +69,13 @@ public class Juego extends InterfaceJuego {
 
 			}
 		}
-<<<<<<< HEAD
-=======
+		
+		// Se inicializan los corazones segun la cantidad de vidas del personaje.
 		this.corazones = new Vidas[per.vidas];
 		for(int i = 0; i < corazones.length; i++) {
-			corazones[i] = new Vidas(40 + i * 80, 30);
+			corazones[i] = new Vidas(45 + i * 80, 50);
 		}
 		
->>>>>>> b3901df (actualizacion sistema de vidas)
 		/*this.enemigos = new Enemigo[4][6];
 		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles		
 			for (int j = 0; j < enemigos[i].length; j++) {
@@ -124,48 +96,25 @@ public class Juego extends InterfaceJuego {
 	 */
 
 	public void tick() {
-<<<<<<< HEAD
-=======
-		if(per.vidas <= 0) {
-			int tamañoFuente = 70;
-			entorno.cambiarFont("Arial", tamañoFuente, Color.white);
-			entorno.escribirTexto("PERDISTE", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+		// Procesamiento de un instante de tiempo
+		if (perdio(per)) {
 			return;
 		}
->>>>>>> b3901df (actualizacion sistema de vidas)
-		// Procesamiento de un instante de tiempo
 		
 		fon.dibujar(entorno); // Dibuja el fondo
 		per.dibujar(entorno); // Dibuja el personaje
-<<<<<<< HEAD
-		
-=======
->>>>>>> b3901df (actualizacion sistema de vidas)
-		for (int i = 0; i < islas.length; i++) { // Recorre los niveles
-			for (int j = 0; j < islas[i].length; j++) {
-				islas[i][j].dibujar(entorno);
-			}
-		}
+		dibujarIslas(entorno, islas);
 		/*for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
 			for (int j = 0; j < enemigos[i].length; j++) {
 				enemigos[i][j].dibujar(entorno);
 				enemigos[i][j].mover();
 			}
 		}*/
-<<<<<<< HEAD
-=======
-		
-		for(int i = 0; i < per.vidas; i++) {
-			corazones[i].dibujar(entorno);
-		}
-		
->>>>>>> b3901df (actualizacion sistema de vidas)
+		dibujarCorazones(entorno, corazones);
 		per.caer(); // Llama a la funcion caer() del personaje que lo hace caer cuando no esta
 					// tocando el piso.
 
-		
-		if (!tocoTecho(per, islas)) {
-			
+		if (!tocoTecho(per, islas)) {			
 			per.salto(); // Llama a la funcion salto() del personaje que verifica si esta en un salto y
 			// hace que se eleve.
 		}
@@ -175,26 +124,13 @@ public class Juego extends InterfaceJuego {
 		}
 		per.actualizarBordes(); // Llama a la funcion actualizarBordes() del personaje que actualiza sus bordes
 								// constantemente.
-<<<<<<< HEAD
-=======
+		caidaAlVacio(entorno, per); // Verifica si el personaje cayo al vacio y si es asi le resta una vida.
 		
-		if(per.piso > entorno.alto()) {
-
-		    per.vidas--;
-
-		    per.x = 100;
-		    per.y = 100;
-
-		    per.saltando = false;
-		    per.contSaltos = 0;
-		}
-		
-		
->>>>>>> b3901df (actualizacion sistema de vidas)
 		tocoPiso(per, islas); // Llama a la funcion tocoPiso(per, is) que detecta si el personaje esta tocando
 								// alguna isla y si es asi cambia su variable de instancia.
 		arregloVisual(per, islas);
 		limite(per, islas, fon);
+		
 		// Si se presiona la tecla derecha Y el personaje no toca la isla del lado
 		// izquierdo (tocaIsla NO retorne 2) ===> Se mueve a la derecha +4
 		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && tocaIsla(per, islas) != 2 && tocaIsla(per, islas) != 3) {
@@ -439,4 +375,40 @@ public class Juego extends InterfaceJuego {
 
 	}
 
+	// Funcion que verifica si el jugador perdio.
+	public boolean perdio(Personaje p) {
+		if(p.vidas <= 0) {
+			int tamañoFuente = 70;
+			entorno.cambiarFont("Arial", tamañoFuente, Color.white);
+			entorno.escribirTexto("PERDISTE", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+			return true;
+		}
+		return false;
+	}
+	
+	public void dibujarIslas(Entorno entorno, Isla[][] islas) {
+		for (int i = 0; i < islas.length; i++) { // Recorre los niveles
+			for (int j = 0; j < islas[i].length; j++) { // Recorre la cantidad de islas por nivel
+				islas[i][j].dibujar(entorno);
+			}
+		}
+	}
+	public void dibujarCorazones(Entorno entorno, Vidas[] corazones) {
+		for(int i = 0; i < per.vidas; i++) {
+			corazones[i].dibujar(entorno);
+		}
+	}
+	
+	public void caidaAlVacio(Entorno entorno, Personaje per) {
+		if(per.piso > entorno.alto()) {
+
+		    per.vidas--;
+
+		    per.x = 100;
+		    per.y = 100;
+
+		    per.saltando = false;
+		    per.contSaltos = 0;
+		}
+	}
 }

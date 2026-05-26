@@ -1,6 +1,2 @@
-<<<<<<< HEAD
 JAJA
 DOMADO
-=======
-Hecho por el grupo 6 de la comisión 1
->>>>>>> b3901df (actualizacion sistema de vidas)
