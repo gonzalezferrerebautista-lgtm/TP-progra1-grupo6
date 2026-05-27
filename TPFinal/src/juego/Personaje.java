@@ -6,31 +6,31 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Personaje {
-	double x;
-	double y;
-	boolean dir;
-	double escala;
-	Image imagen1;
-	Image imagen2;
-	boolean estaTocandoPiso; 
-	boolean saltando;
-	double ancho;
-	double largo;
-	double techo;
-	double piso;
-	double bordeD;
-	double bordeI;
-	int contSaltos;
-	int vidas;
-	Entorno e;
+	private double x;
+	private double y;
+	private boolean direccion;
+	private double escala;
+	private Image imagen1;
+	private Image imagen2;
+	private boolean estaTocandoPiso; 
+	private boolean saltando;
+	private double ancho;
+	private double largo;
+	private double techo;
+	private double piso;
+	private double bordeD;
+	private double bordeI;
+	private int contSaltos;
+	private int vidas;
+	private Entorno entorno;
 	
 	public Personaje(Entorno e) {
 		// Inicializo todas las variables de instancia.
-		this.e = e; // Entorno
+		this.entorno = e; // Entorno
 		// Ubicacion del personaje
 		this.x = 200;
 		this.y = 100;
-		this.dir = false;
+		this.direccion = false;
 		// Tamaños del personaje
 		this.escala = 0.2;
 		this.ancho = 320*escala;
@@ -48,9 +48,117 @@ public class Personaje {
 		this.contSaltos = 0;
 		this.vidas = 5;
 	}
+	public double getX() {
+		return x;
+	}
+	public void setX(double x) {
+		this.x = x;
+	}
+	public double getY() {
+		return y;
+	}
+	public void setY(double y) {
+		this.y = y;
+	}
+	public boolean isDireccion() {
+		return direccion;
+	}
+	public void setDireccion(boolean direccion) {
+		this.direccion = direccion;
+	}
+	public double getEscala() {
+		return escala;
+	}
+	public void setEscala(double escala) {
+		this.escala = escala;
+	}
+	public Image getImagen1() {
+		return imagen1;
+	}
+	public void setImagen1(Image imagen1) {
+		this.imagen1 = imagen1;
+	}
+	public Image getImagen2() {
+		return imagen2;
+	}
+	public void setImagen2(Image imagen2) {
+		this.imagen2 = imagen2;
+	}
+	public boolean isEstaTocandoPiso() {
+		return estaTocandoPiso;
+	}
+	public void setEstaTocandoPiso(boolean estaTocandoPiso) {
+		this.estaTocandoPiso = estaTocandoPiso;
+	}
+	public boolean isSaltando() {
+		return saltando;
+	}
+	public void setSaltando(boolean saltando) {
+		this.saltando = saltando;
+	}
+	public double getAncho() {
+		return ancho;
+	}
+	public void setAncho(double ancho) {
+		this.ancho = ancho;
+	}
+	public double getLargo() {
+		return largo;
+	}
+	public void setLargo(double largo) {
+		this.largo = largo;
+	}
+	public double getTecho() {
+		return techo;
+	}
+	public void setTecho(double techo) {
+		this.techo = techo;
+	}
+	public double getPiso() {
+		return piso;
+	}
+	public void setPiso(double piso) {
+		this.piso = piso;
+	}
+	public double getBordeD() {
+		return bordeD;
+	}
+	public void setBordeD(double bordeD) {
+		this.bordeD = bordeD;
+	}
+	public double getBordeI() {
+		return bordeI;
+	}
+	public void setBordeI(double bordeI) {
+		this.bordeI = bordeI;
+	}
+	public int getContSaltos() {
+		return contSaltos;
+	}
+	public void setContSaltos(int contSaltos) {
+		this.contSaltos = contSaltos;
+	}
+	public int getVidas() {
+		return vidas;
+	}
+	public void setVidas(int vidas) {
+		this.vidas = vidas;
+	}
+	public Entorno getEntorno() {
+		return entorno;
+	}
+	public void setEntorno(Entorno entorno) {
+		this.entorno = entorno;
+	}
+	public void moverX(double x) {
+		this.x += x;
+	}
+	public void moverY(double y) {
+		this.y += y;
+	}
 	// Funcion que muestra al personaje (cambia segun la direccion del mismo.)
 	public void dibujar(Entorno e) {
-		if (!dir) {
+		if (!this.direccion) {
 			e.dibujarImagen(this.imagen1, this.x, this.y, 0, this.escala);
 		}
 		else {
@@ -67,7 +175,7 @@ public class Personaje {
 		}
 		
 		// Si el personaje cae mas alla de el entorno, vuelve por arriba. (Hecho para debuggear, con un margen de 60 para PLACER VISUAL)
-		if (this.y > e.alto()+60) {
+		if (this.y > this.entorno.alto()+60) {
 			this.y = -60;
 		}
 		
@@ -118,5 +226,29 @@ public class Personaje {
 
 	    vidas--;
 
+	}
+	
+	public boolean seApoyaEn(Isla is) {
+	    return Math.abs(this.piso - is.getTecho()) <= 10 && 
+	           this.bordeI < is.getBordeD() && 
+	           this.bordeD > is.getBordeI();
+	}
+	
+	public boolean chocaCabezaCon(Isla is) {
+	    return Math.abs(this.techo - is.getPiso()) <= 10 && 
+	           this.bordeI < is.getBordeD() && 
+	           this.bordeD > is.getBordeI();
+	}
+	
+	public boolean chocaPorDerechaCon(Isla is) {
+	    return (Math.abs(this.bordeD - is.getBordeI()) <= 2) && 
+	           this.piso > is.getTecho() && 
+	           this.techo < is.getPiso();
+	}
+
+	public boolean chocaPorIzquierdaCon(Isla is) {
+	    return (Math.abs(this.bordeI - is.getBordeD()) <= 2) && 
+	           this.piso > is.getTecho() && 
+	           this.techo < is.getPiso();
 	}
 }

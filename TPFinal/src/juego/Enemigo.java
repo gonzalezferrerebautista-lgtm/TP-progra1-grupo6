@@ -8,11 +8,11 @@ import entorno.Entorno;
 import entorno.Herramientas;
 
 public class Enemigo {
-	double x, y, escala;
-	Image imageI, imageD;
-	Entorno e;
-	boolean dir;
-	int[] niveles = {220*1,220*2,220*3,220*4};
+	private double x, y, escala;
+	private Image imageI, imageD;
+	private Entorno e;
+	private boolean dir;
+	private int[] niveles = {220*1,220*2,220*3,220*4};
 	public Enemigo(Entorno e) {
 		
 		this.e = e;

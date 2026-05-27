@@ -6,11 +6,36 @@ import entorno.Herramientas;
 
 public class Vidas {
 
-    Image imagen1;
-    Image imagen2;
-    double x;
-    double y;
-    boolean roto;
+	private Image imagen1;
+	private  Image imagen2;
+
+	public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public boolean isRoto() {
+		return roto;
+	}
+
+	public void setRoto(boolean roto) {
+		this.roto = roto;
+	}
+
+	private double x;
+	private double y;
+	private boolean roto;
     
     public Vidas(double x, double y) {
 
