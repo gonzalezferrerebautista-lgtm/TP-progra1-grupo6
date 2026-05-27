@@ -21,10 +21,6 @@ public class Fondo {
 		this.x = this.ancho/2;
 		this.y = this.alto/2-100;
 		
-		System.out.println(e.alto());
-		System.out.println(this.alto);
-		System.out.println(e.alto()/this.alto);
-		
 		this.escala = e.alto()/this.alto*1.2;
 		
 		this.ancho = imagen.getWidth(null)*escala;

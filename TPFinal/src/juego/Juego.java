@@ -73,7 +73,7 @@ public class Juego extends InterfaceJuego {
 		// Se inicializan los corazones segun la cantidad de vidas del personaje.
 		this.corazones = new Vidas[per.vidas];
 		for(int i = 0; i < corazones.length; i++) {
-			corazones[i] = new Vidas(45 + i * 80, 50);
+			corazones[i] = new Vidas(40 + i * 50, 40);
 		}
 		
 		/*this.enemigos = new Enemigo[4][6];
@@ -394,7 +394,7 @@ public class Juego extends InterfaceJuego {
 		}
 	}
 	public void dibujarCorazones(Entorno entorno, Vidas[] corazones) {
-		for(int i = 0; i < per.vidas; i++) {
+		for(int i = 0; i < corazones.length; i++) {
 			corazones[i].dibujar(entorno);
 		}
 	}
@@ -403,12 +403,35 @@ public class Juego extends InterfaceJuego {
 		if(per.piso > entorno.alto()) {
 
 		    per.vidas--;
+		    boolean terminar = false;
+		    for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
+		    	if (!this.corazones[i].roto) {
+		    		this.corazones[i].roto = true;
+		    		terminar = true;
+		    	}
+		    }
+		    reinicio();
+		    
 
-		    per.x = 100;
-		    per.y = 100;
+		}
+	}
+	
+	public void reinicio() {
+		per.x = 200;
+	    per.y = 100;
 
-		    per.saltando = false;
-		    per.contSaltos = 0;
+		double xFondoOriginal = this.fon.ancho/2;
+		double diferencia = Math.abs(xFondoOriginal-this.fon.x);
+		this.fon.x = xFondoOriginal;
+		
+		diferencia=diferencia*4/3;
+		
+		per.actualizarBordes();
+		for (int i = 0; i < this.islas.length; i++) { // Recorre los niveles
+			for (int j = 0; j < this.islas[i].length; j++) {
+				this.islas[i][j].x +=diferencia;
+				this.islas[i][j].actualizarBordes();
+			}
 		}
 	}
 }
