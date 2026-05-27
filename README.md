@@ -14,3 +14,13 @@
 20 de mayo de 2026 V1.1: 
 - Se corrigio error de variables int y double.
 - Se corrigio error de bordes de pantalla y se elimino final en negro.
+
+26 de mayo de 2026 V1.2:
+- Añadida la barra de vida del jugador.
+- Posibilidad de morir y de perder.
+- Nueva generacion de islas cumpliendo la consigna.
+- Salto reconfigurado y calibrado.
+- Reconfiguracion de colisiones y caida.
+- Solucion de algunas malas practicas y logica de objetos.
+- Implementacion de setters y getters, variables de instancia privadas.
+- Expansion del mapa.
