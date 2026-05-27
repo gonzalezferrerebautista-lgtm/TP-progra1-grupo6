@@ -53,12 +53,14 @@ public class Personaje {
 	}
 	public void setX(double x) {
 		this.x = x;
+		this.actualizarBordes();
 	}
 	public double getY() {
 		return y;
 	}
 	public void setY(double y) {
 		this.y = y;
+		this.actualizarBordes();
 	}
 	public boolean isDireccion() {
 		return direccion;
@@ -99,38 +101,20 @@ public class Personaje {
 	public double getAncho() {
 		return ancho;
 	}
-	public void setAncho(double ancho) {
-		this.ancho = ancho;
-	}
 	public double getLargo() {
 		return largo;
-	}
-	public void setLargo(double largo) {
-		this.largo = largo;
 	}
 	public double getTecho() {
 		return techo;
 	}
-	public void setTecho(double techo) {
-		this.techo = techo;
-	}
 	public double getPiso() {
 		return piso;
-	}
-	public void setPiso(double piso) {
-		this.piso = piso;
 	}
 	public double getBordeD() {
 		return bordeD;
 	}
-	public void setBordeD(double bordeD) {
-		this.bordeD = bordeD;
-	}
 	public double getBordeI() {
 		return bordeI;
-	}
-	public void setBordeI(double bordeI) {
-		this.bordeI = bordeI;
 	}
 	public int getContSaltos() {
 		return contSaltos;
@@ -152,9 +136,11 @@ public class Personaje {
 	}
 	public void moverX(double x) {
 		this.x += x;
+		this.actualizarBordes();
 	}
 	public void moverY(double y) {
 		this.y += y;
+		this.actualizarBordes();
 	}
 	// Funcion que muestra al personaje (cambia segun la direccion del mismo.)
 	public void dibujar(Entorno e) {
@@ -172,11 +158,13 @@ public class Personaje {
 	public void caer() {
 		if (!this.estaTocandoPiso && !this.saltando) {
 			this.y += 10;
+			this.actualizarBordes();
 		}
 		
 		// Si el personaje cae mas alla de el entorno, vuelve por arriba. (Hecho para debuggear, con un margen de 60 para PLACER VISUAL)
 		if (this.y > this.entorno.alto()+60) {
 			this.y = -60;
+			this.actualizarBordes();
 		}
 		
 		
@@ -187,29 +175,35 @@ public class Personaje {
 	public void salto() {
 		// Verifica si el usuario está saltando y queda tiempo de salto.
 		if (this.saltando == true && this.contSaltos > 0) {
-			this.y -=10;			// Se eleva -10.
-			this.contSaltos -=8;	// Resta tiempo de salto.
+			this.y -=12;			// Se eleva -10.
+			this.contSaltos--;	// Resta tiempo de salto.
+			this.actualizarBordes();
 		}
 		else {
 			// Si no esta saltando, el tiempo de salto y la variable saltando se reinician por si acaso
 			this.saltando = false;
 			this.contSaltos = 0;
+			this.actualizarBordes();
 		}				
 	}
 	
 	// Se llama cuando el usuario toca la flecha arriba.
 	public void iniciarSalto() {
 		// Si esta tocando piso, se inicia el salto y sus variables
-		if (this.estaTocandoPiso && this.saltando == false && this.contSaltos == 0) {
+		if (this.estaTocandoPiso && !this.saltando) {
 			this.saltando = true;
-			this.contSaltos = 100;
-			this.y -=20;		// Esto es un boost inicial.
+			this.contSaltos = 17;
+			this.y -= 15;
+			this.actualizarBordes();
 		}
 		
-		// Si ya esta saltando y su contador de saltos es mayor a 0, el contador de saltos se incrementa un poco
-		// para dar la sensacion de que el salto dura mas manteniendo apretado el boton.
-		if (this.saltando == true && this.contSaltos > 0) {
-			this.contSaltos +=3;
+		
+	}
+	
+	public void cortarSalto() {
+		if (this.saltando) {
+			this.contSaltos = 0;
+			this.saltando = false;
 		}
 	}
 
@@ -229,24 +223,36 @@ public class Personaje {
 	}
 	
 	public boolean seApoyaEn(Isla is) {
+		if (is == null) {
+			return false;
+		}
 	    return Math.abs(this.piso - is.getTecho()) <= 10 && 
 	           this.bordeI < is.getBordeD() && 
 	           this.bordeD > is.getBordeI();
 	}
 	
 	public boolean chocaCabezaCon(Isla is) {
+		if (is == null) {
+			return false;
+		}
 	    return Math.abs(this.techo - is.getPiso()) <= 10 && 
 	           this.bordeI < is.getBordeD() && 
 	           this.bordeD > is.getBordeI();
 	}
 	
 	public boolean chocaPorDerechaCon(Isla is) {
+		if (is == null) {
+			return false;
+		}
 	    return (Math.abs(this.bordeD - is.getBordeI()) <= 2) && 
 	           this.piso > is.getTecho() && 
 	           this.techo < is.getPiso();
 	}
 
 	public boolean chocaPorIzquierdaCon(Isla is) {
+		if (is == null) {
+			return false;
+		}
 	    return (Math.abs(this.bordeI - is.getBordeD()) <= 2) && 
 	           this.piso > is.getTecho() && 
 	           this.techo < is.getPiso();

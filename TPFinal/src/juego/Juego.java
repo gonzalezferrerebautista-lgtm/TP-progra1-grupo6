@@ -26,49 +26,9 @@ public class Juego extends InterfaceJuego {
 		// Inicializar lo que haga falta para el juego
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
-		this.islas = new Isla[4][6];
-		int[] tamañoIsla = { 200, 300, 400, 500 };
-		for (int i = 0; i < islas.length; i++) { 			// Recorre los niveles
-			double y = (i + 1) * 170;
-			for (int j = 0; j < islas[i].length; j++) { 	// Recorre la cantidad de islas
-				
-				double base = 300;							// Limite menor de la coordenada x.
-				double separacion = 700;					// Separacion promedio entre las islas
-	
-				// Genera un numero aleatorio entre 0 y la cantidad de islas que entran en el fondo * 10.
-				// Ejemplo: Si el fondo es de 3000-300 y la separacion de 700, entran 3,85 islas. *100 = 385.
-				// entonces genera un numero entre 0 y 385.
-				double r = new Random().nextInt((int) ((this.fon.getAncho()-base)/separacion*100));
-				
-				// Divide el numero entre 100. La idea es que el numero aleatorio este entre 0 y 3,85 siguiendo el caso anterior.
-				r/=100;
-				
-				// Determina la coordenada x de la isla, que va a estar entre 300 y el ancho del fondo.
-				// La base es +300, y la variable es separacion * r que puede ser un numero entre 0 y el ancho
-				// del fondo, de manera aleatoria.
-				// NO SE PUEDE PASAR DEL ANCHO DE LA ISLA porque el calculo de r lo limita. En el caso mas extremo, 
-				// estará en el borde
-				double x = (300 + separacion * r); // [300, 3000] 300+700*x con  0 < x < 3,85 .  300+700*3,85 = 2995
-				
-				int a = new Random().nextInt(4);	// Numero aleatorio que determina el tamaño de la isla, 0 mas chico, 3 mas grande.
-
-				// Si la distancia entre el personaje y la isla es menor a 300, y la isla es de las capas superiores,
-				// la isla es movida automaticamente por la separacion. Esto se debe a que ya hay una isla
-				// ubicada en ese lugar creada intencionalmente.
-				if (Math.abs(x-this.per.getX()) < 300 && (i == 0||i == 1)) {
-					x+=separacion;
-				}
-				
-				islas[i][j] =  new Isla(x, y, tamañoIsla[a], 50);	// Se invoca a la isla.
-				
-				// Si la isla es la primera en la segunda capa, se genera justo en la coordenada x del personaje.
-				if (j == 0 && i == 1) {
-					islas[i][j] =  new Isla(this.per.getX(), y, tamañoIsla[1], 50);
-				}
-				
-
-			}
-		}
+		this.islas = new Isla[4][25];
+		
+		generarMapa();
 		
 		// Se inicializan los corazones segun la cantidad de vidas del personaje.
 		this.corazones = new Vidas[per.getVidas()];
@@ -141,15 +101,12 @@ public class Juego extends InterfaceJuego {
 			for (int j = 0; j < islas[i].length; j++) {
 				Isla islaActual = islas[i][j];
 
-				if (per.seApoyaEn(islaActual)) {
-				per.setEstaTocandoPiso(true);
+				if (islaActual != null && per.seApoyaEn(islaActual)) {
+					per.setEstaTocandoPiso(true);
 				
-					double distancia = Math.abs(per.getPiso() - islaActual.getTecho());
-					if (distancia > 5) {
-						per.setY(per.getY() + 3);
-					} else if (distancia >= 2) {
-						per.setY(per.getY() + 1);
-					}
+					per.setY(islaActual.getTecho()-per.getLargo() /2);
+					per.actualizarBordes();
+					
 				}
 		        
 		    }
@@ -185,9 +142,13 @@ public class Juego extends InterfaceJuego {
 		// Si el personaje presiona la tecla arriba comienza el salto
 		// Si el usuario mantiene el boton apretado, no se volvera a ejecutar el salto,
 		// pero si este durara mas tiempo y se eleva un poco mas (intencionalmente)
-		if (entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
+		if (entorno.sePresiono(entorno.TECLA_ARRIBA)) {
 			per.iniciarSalto(); // Llama a la funcion saltar del personaje que inicia el salto unicamente si
 								// está
+		}
+		
+		if (!entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
+			per.cortarSalto();
 		}
 
 	}
@@ -237,8 +198,10 @@ public class Juego extends InterfaceJuego {
 			p.actualizarBordes();
 			for (int i = 0; i < islas.length; i++) { // Recorre los niveles
 				for (int j = 0; j < islas[i].length; j++) {
-					islas[i][j].moverX(-4);
-					islas[i][j].actualizarBordes();
+					if (islas[i][j] != null) {
+						islas[i][j].moverX(-4);
+						islas[i][j].actualizarBordes();
+					}
 				}
 			}
 		}
@@ -263,7 +226,9 @@ public class Juego extends InterfaceJuego {
 	public void dibujarIslas(Entorno entorno, Isla[][] islas) {
 		for (int i = 0; i < islas.length; i++) { // Recorre los niveles
 			for (int j = 0; j < islas[i].length; j++) { // Recorre la cantidad de islas por nivel
-				islas[i][j].dibujar(entorno);
+				if (islas[i][j] != null) {
+					islas[i][j].dibujar(entorno);
+				}
 			}
 		}
 	}
@@ -303,9 +268,56 @@ public class Juego extends InterfaceJuego {
 		per.actualizarBordes();
 		for (int i = 0; i < this.islas.length; i++) { // Recorre los niveles
 			for (int j = 0; j < this.islas[i].length; j++) {
-				this.islas[i][j].moverX(diferencia);
-				this.islas[i][j].actualizarBordes();
+				if (islas[i][j] != null) {
+					this.islas[i][j].moverX(diferencia);
+					this.islas[i][j].actualizarBordes();
+				}
+				
 			}
 		}
+	}
+	
+	public void generarMapa() {
+		double grosorIsla = 45;
+		// Primer piso (con separaciones fijas, fila index 3)
+		double tamañoIsla = 300; // El tamaño de las islas del piso es fijo en 300
+		double yPiso = 700;		// Esta en la altura 650 casi abajo de la pantalla
+		double separacionPiso = 160;	// La separacion del piso es 
+		double x = 200;	// La primera isla aparece en las coordenadas x del jugador
+		
+		for (int i = 0; i < islas[islas.length-1].length; i++) {
+			islas[islas.length-1][i] = new Isla(x, yPiso, tamañoIsla, grosorIsla);
+			x+= tamañoIsla+separacionPiso;
+		}
+		
+		// Generacion de las islas flotantes
+		double[] alturas = {160, 340, 520};
+		int[] tamaños = {150, 220, 300};
+		
+		for (int i = 0; i < islas.length-1; i++) {
+			double y = alturas[i];
+			x = 400;
+			
+			for (int j = 0; j < islas[i].length; j++) {
+				
+				if (Math.random() > 0.3) {
+					int r = new Random().nextInt(tamaños.length);
+					int tamaño = tamaños[r];
+					islas[i][j] = new Isla(x, y, tamaño, 45);
+					
+					int separacion = new Random().nextInt(100)+tamaño+110;
+					x += separacion;
+					
+				}
+				else {
+					islas[i][j] = null;
+					x += 250;
+				}
+			}
+			
+		}
+		
+		
+		
 	}
 }
