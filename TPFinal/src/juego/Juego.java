@@ -14,6 +14,8 @@ public class Juego extends InterfaceJuego {
 	// ...
 	Personaje per;
 	Vidas[] corazones;
+	Proyectil proyectil;
+	Explosion explosion;
 	Fondo fon;
 	Isla[][] islas;
 	Enemigo[][] enemigos;
@@ -45,6 +47,9 @@ public class Juego extends InterfaceJuego {
 
 		// Inicia el juego!
 		this.entorno.iniciar();
+		
+		
+		
 
 	}
 
@@ -150,9 +155,58 @@ public class Juego extends InterfaceJuego {
 		if (!entorno.estaPresionada(entorno.TECLA_ARRIBA)) {
 			per.cortarSalto();
 		}
+		if (entorno.sePresionoBoton(entorno.BOTON_IZQUIERDO)                    //Solo dispara cuando se presiona el click izquierdo y no hay otro proyectil activo
+		        && proyectil == null) {
 
+		    proyectil = new Proyectil(                        //Crea la bala,sale del jugador y apunta al mouse
+		        per.getX(), 
+		        per.getY(),
+		        entorno.mouseX(),
+		        entorno.mouseY()
+		    );
+		}
+
+		if (proyectil != null) {
+
+		    proyectil.mover();
+		    proyectil.dibujar(entorno);
+
+		    boolean impacto = false;
+
+		    for (int i = 0; i < islas.length && !impacto; i++) {
+		        for (int j = 0; j < islas[i].length && !impacto; j++) {
+
+		            if (islas[i][j] != null &&                             // chequea que exista isla y que haya choque
+		                proyectil.colisionaCon(islas[i][j])) {                   
+
+		                explosion = new Explosion(            //crea explosión EXACTAMENTE donde estaba la bala
+		                    proyectil.getX(),
+		                    proyectil.getY()
+		                );
+
+		                proyectil = null;           //elimina la bala y corta el loop
+		                impacto = true;
+		            }
+		        }
+		    }
+
+		    if (proyectil != null &&
+		        proyectil.fueraDePantalla(entorno)) {
+
+		        proyectil = null;
+		    }
+		}
+
+		if (explosion != null) {
+
+			explosion.dibujar(entorno);        //mientras exista la explosion se muestra y se reduce su tiempo de vida
+		    explosion.actualizar();
+
+		    if (explosion.terminada()) {
+		        explosion = null;
+		     }
+		}
 	}
-
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		Juego juego = new Juego();
@@ -318,6 +372,7 @@ public class Juego extends InterfaceJuego {
 		}
 		
 		
+		    }
 		
 	}
-}
+
