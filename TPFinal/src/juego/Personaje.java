@@ -31,17 +31,19 @@ public class Personaje {
 		this.x = 200;
 		this.y = 100;
 		this.direccion = false;
+		// Imagenes del personaje (visuales)
+		this.imagen1 = Herramientas.cargarImagen("personaje.gif");
+		this.imagen2 = Herramientas.cargarImagen("personaje-rotate.gif");
 		// Tamaños del personaje
 		this.escala = 0.2;
-		this.ancho = 320*escala;
-		this.largo = 470*escala;
+		this.ancho = imagen1.getWidth(null);
+		this.largo = imagen1.getHeight(null);
+		this.ancho *= escala;
+		this.largo *= escala;
 		this.techo = this.y-this.largo/2;
 		this.piso = this.y+this.largo/2-1;
 		this.bordeD = this.x+this.ancho/2;
 		this.bordeI = this.x-this.ancho/2;
-		// Imagenes del personaje (visuales)
-		this.imagen1 = Herramientas.cargarImagen("blobubu-the-monster-plush-2d-pixel-character-32x32-8-v0-c8b22imgyh8f1.gif");
-		this.imagen2 = Herramientas.cargarImagen("descarga.gif");
 		// Contadores y booleanos, variables, etc.
 		this.estaTocandoPiso = false;
 		this.saltando = false;
@@ -161,7 +163,7 @@ public class Personaje {
 			this.actualizarBordes();
 		}
 		
-		// Si el personaje cae mas alla de el entorno, vuelve por arriba. (Hecho para debuggear, con un margen de 60 para PLACER VISUAL)
+		// Si el personaje cae mas alla de el entorno, vuelve por arriba. (Hecho para debuggear, con un margen de 60 para mejora VISUAL)
 		if (this.y > this.entorno.alto()+60) {
 			this.y = -60;
 			this.actualizarBordes();
@@ -256,5 +258,16 @@ public class Personaje {
 	    return (Math.abs(this.bordeI - is.getBordeD()) <= 2) && 
 	           this.piso > is.getTecho() && 
 	           this.techo < is.getPiso();
+	}
+	
+	public boolean colisionCon(Enemigo enemigo) {
+		if (enemigo == null) {
+			return false;
+		}
+		
+		return this.bordeD > enemigo.getBordeI()
+				&& this.bordeI < enemigo.getBordeD()                 //compara límites del proyectil  contra límites de la isla
+				&& this.piso > enemigo.getTecho()
+				&& this.techo < enemigo.getPiso();
 	}
 }

@@ -24,7 +24,7 @@ public class Proyectil {
 		this.x = xInicial;
 		this.y = yInicial;
 
-		this.escala = 0.1;
+		this.escala = 0.07;
         this.imagen = Herramientas.cargarImagen("bala.png");
 
 		double dx = mouseX - xInicial;
@@ -69,6 +69,16 @@ public class Proyectil {
 	        && x - radio < isla.getBordeD()                 //compara límites del proyectil  contra límites de la isla
 	        && y + radio > isla.getTecho()
 	        && y - radio < isla.getPiso();
+	}
+	public boolean colisionaCon(Enemigo enemigo) {
+		if (enemigo == null) {
+			return false;
+		}
+		
+		return x + radio > enemigo.getBordeI()
+				&& x - radio < enemigo.getBordeD()                 //compara límites del proyectil  contra límites de la isla
+				&& y + radio > enemigo.getTecho()
+				&& y - radio < enemigo.getPiso();
 	}
 	
 	

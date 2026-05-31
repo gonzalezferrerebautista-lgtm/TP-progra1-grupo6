@@ -1,6 +1,8 @@
 package juego;
 
 import java.awt.Image;
+import java.util.Random;
+
 import entorno.Entorno;
 import entorno.Herramientas;
 
@@ -13,14 +15,14 @@ public class Explosion {
 	public Explosion(double x, double y) {
 	    this.x = x;
 	    this.y = y;
-
 	    imagen = Herramientas.cargarImagen("explosion.png");
 
 	    tiempo = 15;
 	}
 	
 	public void dibujar(Entorno entorno) {
-	    entorno.dibujarImagen(imagen, x, y, 0, 0.1);
+		int r = new Random().nextInt(3);
+	    entorno.dibujarImagen(imagen, x, y, 0, 0.08+0.01*r);
 	}
 	
 	public void actualizar() {           //nos sirve para contar los ticks  (Cada tick) reduce el contador
