@@ -29,6 +29,7 @@ public class Juego extends InterfaceJuego {
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
 		this.islas = new Isla[4][25];
+		this.enemigos = new Enemigo[4][3];
 		
 		generarMapa();
 		
@@ -38,13 +39,6 @@ public class Juego extends InterfaceJuego {
 			corazones[i] = new Vidas(40 + i * 50, 40);
 		}
 		
-		/*this.enemigos = new Enemigo[4][6];
-		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles		
-			for (int j = 0; j < enemigos[i].length; j++) {
-				enemigos[i][j] = new Enemigo(entorno);
-			}
-		}*/
-
 		// Inicia el juego!
 		this.entorno.iniciar();
 		
@@ -69,13 +63,46 @@ public class Juego extends InterfaceJuego {
 		fon.dibujar(entorno); // Dibuja el fondo
 		per.dibujar(entorno); // Dibuja el personaje
 		dibujarIslas(entorno, islas);
-		/*for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
+		
+		boolean generarEnemigo = false;
+		
+		
+		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
+			
 			for (int j = 0; j < enemigos[i].length; j++) {
-				enemigos[i][j].dibujar(entorno);
-				enemigos[i][j].mover();
+				
+				if (enemigos[i][j] != null) {					
+					
+					enemigos[i][j].dibujar(entorno);
+					enemigos[i][j].mover();
+					enemigos[i][j].actualizarBordes();
+					enemigos[i][j].muriendo();
+					if (enemigos[i][j].fueraDePantalla(entorno)) {
+						enemigos[i][j] = null;
+					}
+					if (enemigos[i][j] != null && enemigos[i][j].isMuerto()) {
+						enemigos[i][j] = null;
+					}
+				}
+				else if (Math.random() < 0.002) {
+	
+					double x;
+					boolean dir;
+					if (Math.random() > 0.8) {
+						x = 0;
+						dir = true;
+					}
+					else {
+						x = this.entorno.ancho();
+						dir = false;
+					}
+					int y = 90+180*i;
+					this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
+					generarEnemigo = false;
+				}
 			}
-		}*/
-		dibujarCorazones(entorno, corazones);
+		}
+		
 		per.caer(); // Llama a la funcion caer() del personaje que lo hace caer cuando no esta
 					// tocando el piso.
 
@@ -135,6 +162,16 @@ public class Juego extends InterfaceJuego {
 		    }
 		}
 		
+		for (int i = 0; i < enemigos.length; i++) {
+		    for (int j = 0; j < enemigos[i].length; j++) {
+		        if (islas[i][j] != null) {
+		            if (per.colisionCon(enemigos[i][j]) && !enemigos[i][j].isMuerto() && !enemigos[i][j].isMuriendo()) {
+		            	reinicio();
+		            }
+		        }
+		    }
+		}
+		
 		if (entorno.estaPresionada(entorno.TECLA_DERECHA) && puedeMoverDerecha) {
 			per.moverX(4);
 			per.setDireccion(false); // Es falso cuando se mueve a la derecha
@@ -168,33 +205,52 @@ public class Juego extends InterfaceJuego {
 
 		if (proyectil != null) {
 
-		    proyectil.mover();
-		    proyectil.dibujar(entorno);
+			if (proyectil.fueraDePantalla(entorno)) {		
+				proyectil = null;
+			}
+			else {
+				proyectil.mover();
+				proyectil.dibujar(entorno);
+				
+				boolean impacto = false;
+				
+				for (int i = 0; i < islas.length && !impacto; i++) {
+					for (int j = 0; j < islas[i].length && !impacto; j++) {
+						
+						if (islas[i][j] != null &&                             // chequea que exista isla y que haya choque
+								proyectil.colisionaCon(islas[i][j])) {                   
+							
+							explosion = new Explosion(            //crea explosión EXACTAMENTE donde estaba la bala
+									proyectil.getX(),
+									proyectil.getY()
+									);
+							
+							proyectil = null;           //elimina la bala y corta el loop
+							impacto = true;
+						}
+					}
+				}
+				for (int i = 0; i < enemigos.length && !impacto; i++) {
+					for (int j = 0; j < enemigos[i].length && !impacto; j++) {
+						
+						if (enemigos[i][j] != null &&                             // chequea que el enemigo exista y que haya choque
+								proyectil.colisionaCon(enemigos[i][j])) {                   
+							
+							explosion = new Explosion(            //crea explosión EXACTAMENTE donde estaba la bala
+									proyectil.getX(),
+									proyectil.getY()
+									);
 
-		    boolean impacto = false;
+							enemigos[i][j].morir();
+							
+							proyectil = null;           //elimina la bala y corta el loop
+							impacto = true;
+						}
+					}
+				}
+				
+			}
 
-		    for (int i = 0; i < islas.length && !impacto; i++) {
-		        for (int j = 0; j < islas[i].length && !impacto; j++) {
-
-		            if (islas[i][j] != null &&                             // chequea que exista isla y que haya choque
-		                proyectil.colisionaCon(islas[i][j])) {                   
-
-		                explosion = new Explosion(            //crea explosión EXACTAMENTE donde estaba la bala
-		                    proyectil.getX(),
-		                    proyectil.getY()
-		                );
-
-		                proyectil = null;           //elimina la bala y corta el loop
-		                impacto = true;
-		            }
-		        }
-		    }
-
-		    if (proyectil != null &&
-		        proyectil.fueraDePantalla(entorno)) {
-
-		        proyectil = null;
-		    }
 		}
 
 		if (explosion != null) {
@@ -206,6 +262,7 @@ public class Juego extends InterfaceJuego {
 		        explosion = null;
 		     }
 		}
+		dibujarCorazones(entorno, corazones);
 	}
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
@@ -258,6 +315,14 @@ public class Juego extends InterfaceJuego {
 					}
 				}
 			}
+			for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
+				for (int j = 0; j < enemigos[i].length; j++) {
+					if (enemigos[i][j] != null) {
+						enemigos[i][j].moverX(-4);
+						enemigos[i][j].actualizarBordes();
+					}
+				}
+			}
 		}
 		
 		if (p.getX() < 25) {
@@ -294,22 +359,21 @@ public class Juego extends InterfaceJuego {
 	
 	public void caidaAlVacio(Entorno entorno, Personaje per) {
 		if(per.getPiso() > entorno.alto()) {
-
-		    per.perderVida();
-		    boolean terminar = false;
-		    for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
-		    	if (!this.corazones[i].isRoto()) {
-		    		this.corazones[i].setRoto(true);
-		    		terminar = true;
-		    	}
-		    }
 		    reinicio();
-		    
-
 		}
 	}
 	
 	public void reinicio() {
+		
+		per.perderVida();
+	    boolean terminar = false;
+	    for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
+	    	if (!this.corazones[i].isRoto()) {
+	    		this.corazones[i].setRoto(true);
+	    		terminar = true;
+	    	}
+	    }
+	    
 		per.setX(200);
 	    per.setY(100);
 
@@ -327,6 +391,12 @@ public class Juego extends InterfaceJuego {
 					this.islas[i][j].actualizarBordes();
 				}
 				
+			}
+		}
+		
+		for (int i = 0; i < this.enemigos.length; i++) { // Recorre los niveles
+			for (int j = 0; j < this.enemigos[i].length; j++) {
+				enemigos[i][j] = null;
 			}
 		}
 	}
@@ -371,8 +441,7 @@ public class Juego extends InterfaceJuego {
 			
 		}
 		
-		
-		    }
-		
 	}
+
+}
 
