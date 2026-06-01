@@ -28,7 +28,7 @@ public class Personaje {
 		// Inicializo todas las variables de instancia.
 		this.entorno = e; // Entorno
 		// Ubicacion del personaje
-		this.x = 200;
+		this.x = 8500;		//200
 		this.y = 100;
 		this.direccion = false;
 		// Imagenes del personaje (visuales)

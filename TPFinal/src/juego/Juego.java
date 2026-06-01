@@ -19,6 +19,7 @@ public class Juego extends InterfaceJuego {
 	Fondo fon;
 	Isla[][] islas;
 	Enemigo[][] enemigos;
+	Castillo castillo;	
 	
 
 	Juego() {
@@ -28,15 +29,28 @@ public class Juego extends InterfaceJuego {
 		// Inicializar lo que haga falta para el juego
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
-		this.islas = new Isla[4][25];
-		this.enemigos = new Enemigo[4][3];
+		this.islas = new Isla[4][25];						// ...
+		this.enemigos = new Enemigo[4][3];					// ...
+		
 		
 		generarMapa();
+		
+		// Obtengo la posicion de esa ultima isla y guardamos las coordenadas
+		
+		double x = islas[3][20].getX();
+		double y = islas[3][20].getY();
+		
+		// Creo/inicializo el objeto castillo
+
+		this.castillo = new Castillo(x, y - 175, entorno);		// ese "- algo" sirve para subir el objeto
+		
 		
 		// Se inicializan los corazones segun la cantidad de vidas del personaje.
 		this.corazones = new Vidas[per.getVidas()];
 		for(int i = 0; i < corazones.length; i++) {
 			corazones[i] = new Vidas(40 + i * 50, 40);
+			
+			
 		}
 		
 		// Inicia el juego!
@@ -56,6 +70,11 @@ public class Juego extends InterfaceJuego {
 
 	public void tick() {
 		// Procesamiento de un instante de tiempo
+		
+		if (gano(per, castillo)) {
+	        return;
+		}
+	        
 		if (perdio(per)) {
 			return;
 		}
@@ -63,6 +82,7 @@ public class Juego extends InterfaceJuego {
 		fon.dibujar(entorno); // Dibuja el fondo
 		per.dibujar(entorno); // Dibuja el personaje
 		dibujarIslas(entorno, islas);
+		castillo.dibujar(entorno);	// Dibuja el castillo
 		
 		boolean generarEnemigo = false;
 		
@@ -102,6 +122,8 @@ public class Juego extends InterfaceJuego {
 				}
 			}
 		}
+		
+	
 		
 		per.caer(); // Llama a la funcion caer() del personaje que lo hace caer cuando no esta
 					// tocando el piso.
@@ -315,6 +337,8 @@ public class Juego extends InterfaceJuego {
 					}
 				}
 			}
+			castillo.moverX(-4);
+			
 			for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
 				for (int j = 0; j < enemigos[i].length; j++) {
 					if (enemigos[i][j] != null) {
@@ -340,6 +364,18 @@ public class Juego extends InterfaceJuego {
 			return true;
 		}
 		return false;
+	}
+	
+	// Funcion que verifica si el jugador ganó
+	public boolean gano (Personaje p, Castillo c) {
+	    // Corregido: cambiamos 'castillo' por 'c'
+	    if (p.getX() > c.getBordeI() && p.getY() > c.getTecho()) {
+	        int tamañoFuente = 70;
+	        entorno.cambiarFont("Arial", tamañoFuente, Color.white);
+	        entorno.escribirTexto("¡GANASTE!", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+	        return true;
+	    }
+	    return false;
 	}
 	
 	public void dibujarIslas(Entorno entorno, Isla[][] islas) {
@@ -385,6 +421,7 @@ public class Juego extends InterfaceJuego {
 		
 		per.actualizarBordes();
 		for (int i = 0; i < this.islas.length; i++) { // Recorre los niveles
+			this.castillo.moverX(diferencia);
 			for (int j = 0; j < this.islas[i].length; j++) {
 				if (islas[i][j] != null) {
 					this.islas[i][j].moverX(diferencia);
