@@ -32,4 +32,8 @@ public class Explosion {
 	public boolean terminada() {            //nos sirve para saber cuando desaparece la explosion, Cuando el contador llega a 0, el juego debe eliminarla
 	    return tiempo <= 0;
 	}
+	
+	public void moverX(int x) {
+		this.x += x;
+	}
 }

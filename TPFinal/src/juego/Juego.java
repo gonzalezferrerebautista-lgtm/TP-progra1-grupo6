@@ -29,7 +29,9 @@ public class Juego extends InterfaceJuego {
 		// Inicializar lo que haga falta para el juego
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
-		this.islas = new Isla[4][25];						// ...
+		int niveles = 4;
+		int cantIslas = 21;
+		this.islas = new Isla[niveles][cantIslas];						// ...
 		this.enemigos = new Enemigo[4][3];					// ...
 		
 		
@@ -37,12 +39,13 @@ public class Juego extends InterfaceJuego {
 		
 		// Obtengo la posicion de esa ultima isla y guardamos las coordenadas
 		
-		double x = islas[3][20].getX();
-		double y = islas[3][20].getY();
+		
+		double x = islas[niveles-1][cantIslas-1].getX();
+		double y = islas[niveles-1][cantIslas-1].getY();
 		
 		// Creo/inicializo el objeto castillo
 
-		this.castillo = new Castillo(x, y - 175, entorno);		// ese "- algo" sirve para subir el objeto
+		this.castillo = new Castillo(x, y - 200, entorno);		// ese "- algo" sirve para subir el objeto
 		
 		
 		// Se inicializan los corazones segun la cantidad de vidas del personaje.
@@ -84,8 +87,7 @@ public class Juego extends InterfaceJuego {
 		dibujarIslas(entorno, islas);
 		castillo.dibujar(entorno);	// Dibuja el castillo
 		
-		boolean generarEnemigo = false;
-		
+
 		
 		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
 			
@@ -118,7 +120,7 @@ public class Juego extends InterfaceJuego {
 					}
 					int y = 90+180*i;
 					this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
-					generarEnemigo = false;
+				
 				}
 			}
 		}
@@ -137,7 +139,7 @@ public class Juego extends InterfaceJuego {
 		        }
 		    }
 		}
-		
+		System.out.println(this.castillo.getY());
 		if (!golpeoTecho) {			
 			per.salto(); // Llama a la funcion salto() del personaje que verifica si esta en un salto y
 			// hace que se eleve.
@@ -186,9 +188,11 @@ public class Juego extends InterfaceJuego {
 		
 		for (int i = 0; i < enemigos.length; i++) {
 		    for (int j = 0; j < enemigos[i].length; j++) {
-		        if (islas[i][j] != null) {
+		        if (enemigos[i][j] != null) {
+		        	
 		            if (per.colisionCon(enemigos[i][j]) && !enemigos[i][j].isMuerto() && !enemigos[i][j].isMuriendo()) {
-		            	reinicio();
+		            	eliminarCorazon();
+		            	enemigos[i][j].morir();
 		            }
 		        }
 		    }
@@ -347,7 +351,13 @@ public class Juego extends InterfaceJuego {
 					}
 				}
 			}
+			
+			if (this.explosion != null) {
+				explosion.moverX(-4);
+			}
 		}
+		
+		
 		
 		if (p.getX() < 25) {
 			p.moverX(4);
@@ -394,12 +404,15 @@ public class Juego extends InterfaceJuego {
 	}
 	
 	public void caidaAlVacio(Entorno entorno, Personaje per) {
-		if(per.getPiso() > entorno.alto()) {
-		    reinicio();
+		if (per.getY() > this.entorno.alto()+60) {
+			per.setY(-60);
+			eliminarCorazon();
+			per.actualizarBordes();
 		}
+		
 	}
 	
-	public void reinicio() {
+	public void eliminarCorazon() {
 		
 		per.perderVida();
 	    boolean terminar = false;
@@ -410,32 +423,7 @@ public class Juego extends InterfaceJuego {
 	    	}
 	    }
 	    
-		per.setX(200);
-	    per.setY(100);
-
-		double xFondoOriginal = this.fon.getAncho()/2;
-		double diferencia = Math.abs(xFondoOriginal-this.fon.getX());
-		this.fon.setX(xFondoOriginal);
 		
-		diferencia=diferencia*4/3;
-		
-		per.actualizarBordes();
-		for (int i = 0; i < this.islas.length; i++) { // Recorre los niveles
-			this.castillo.moverX(diferencia);
-			for (int j = 0; j < this.islas[i].length; j++) {
-				if (islas[i][j] != null) {
-					this.islas[i][j].moverX(diferencia);
-					this.islas[i][j].actualizarBordes();
-				}
-				
-			}
-		}
-		
-		for (int i = 0; i < this.enemigos.length; i++) { // Recorre los niveles
-			for (int j = 0; j < this.enemigos[i].length; j++) {
-				enemigos[i][j] = null;
-			}
-		}
 	}
 	
 	public void generarMapa() {
@@ -447,9 +435,14 @@ public class Juego extends InterfaceJuego {
 		double x = 200;	// La primera isla aparece en las coordenadas x del jugador
 		
 		for (int i = 0; i < islas[islas.length-1].length; i++) {
+			if (i == islas[islas.length-1].length-1) {
+				tamañoIsla = 500;
+			}
 			islas[islas.length-1][i] = new Isla(x, yPiso, tamañoIsla, grosorIsla);
 			x+= tamañoIsla+separacionPiso;
 		}
+		tamañoIsla = 300;
+		
 		
 		// Generacion de las islas flotantes
 		double[] alturas = {160, 340, 520};

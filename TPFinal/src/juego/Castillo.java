@@ -68,6 +68,9 @@ public class Castillo {
 	    return this.techo;
 	}
 		
+	public double getY() {
+	    return this.y;
+	}
 
 }
 	

@@ -28,7 +28,7 @@ public class Personaje {
 		// Inicializo todas las variables de instancia.
 		this.entorno = e; // Entorno
 		// Ubicacion del personaje
-		this.x = 8500;		//200
+		this.x = 200;		//200
 		this.y = 100;
 		this.direccion = false;
 		// Imagenes del personaje (visuales)
@@ -163,11 +163,7 @@ public class Personaje {
 			this.actualizarBordes();
 		}
 		
-		// Si el personaje cae mas alla de el entorno, vuelve por arriba. (Hecho para debuggear, con un margen de 60 para mejora VISUAL)
-		if (this.y > this.entorno.alto()+60) {
-			this.y = -60;
-			this.actualizarBordes();
-		}
+		
 		
 		
 		
@@ -264,10 +260,13 @@ public class Personaje {
 		if (enemigo == null) {
 			return false;
 		}
-		
-		return this.bordeD > enemigo.getBordeI()
-				&& this.bordeI < enemigo.getBordeD()                 //compara límites del proyectil  contra límites de la isla
-				&& this.piso > enemigo.getTecho()
-				&& this.techo < enemigo.getPiso();
+		if (this.bordeD > enemigo.getBordeI()
+			&& this.bordeI < enemigo.getBordeD()                 //compara límites del proyectil  contra límites de la isla
+			&& this.piso > enemigo.getTecho()
+			&& this.techo < enemigo.getPiso()) {
+			return true;
+		}
+		return false;
+	
 	}
 }
