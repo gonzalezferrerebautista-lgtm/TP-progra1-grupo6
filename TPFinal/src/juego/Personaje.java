@@ -12,6 +12,8 @@ public class Personaje {
 	private double escala;
 	private Image imagen1;
 	private Image imagen2;
+	private Image imagen1inv;
+	private Image imagen2inv;
 	private boolean estaTocandoPiso; 
 	private boolean saltando;
 	private double ancho;
@@ -23,6 +25,8 @@ public class Personaje {
 	private int contSaltos;
 	private int vidas;
 	private Entorno entorno;
+	private boolean invulnerabilidad;
+	private int tiempoInvulnerabilidad;
 	
 	public Personaje(Entorno e) {
 		// Inicializo todas las variables de instancia.
@@ -32,10 +36,12 @@ public class Personaje {
 		this.y = 100;
 		this.direccion = false;
 		// Imagenes del personaje (visuales)
-		this.imagen1 = Herramientas.cargarImagen("personaje.gif");
-		this.imagen2 = Herramientas.cargarImagen("personaje-rotate.gif");
+		this.imagen1 = Herramientas.cargarImagen("personaje2.gif");
+		this.imagen2 = Herramientas.cargarImagen("personaje2-rotate.gif");
+		this.imagen1inv = Herramientas.cargarImagen("personaje2-invul.gif");
+		this.imagen2inv = Herramientas.cargarImagen("personaje2-invul-rotate.gif");
 		// Tamaños del personaje
-		this.escala = 0.2;
+		this.escala = 0.27;
 		this.ancho = imagen1.getWidth(null);
 		this.largo = imagen1.getHeight(null);
 		this.ancho *= escala;
@@ -49,6 +55,20 @@ public class Personaje {
 		this.saltando = false;
 		this.contSaltos = 0;
 		this.vidas = 5;
+		this.invulnerabilidad = false;
+		this.tiempoInvulnerabilidad = 0;
+	}
+	public boolean isInvulnerable() {
+		return invulnerabilidad;
+	}
+	public void setInvulnerable(boolean invulnerabilidad) {
+		this.invulnerabilidad = invulnerabilidad;
+	}
+	public int getTiempoInvulnerabilidad() {
+		return tiempoInvulnerabilidad;
+	}
+	public void setTiempoInvulnerabilidad(int tiempoInvulnerabilidad) {
+		this.tiempoInvulnerabilidad = tiempoInvulnerabilidad;
 	}
 	public double getX() {
 		return x;
@@ -146,13 +166,25 @@ public class Personaje {
 	}
 	// Funcion que muestra al personaje (cambia segun la direccion del mismo.)
 	public void dibujar(Entorno e) {
-		if (!this.direccion) {
-			e.dibujarImagen(this.imagen1, this.x, this.y, 0, this.escala);
+		if(!this.isInvulnerable()) {
+			if (!this.direccion) {
+				e.dibujarImagen(this.imagen1, this.x, this.y, 0, this.escala);
+			}
+			else {
+				e.dibujarImagen(this.imagen2, this.x, this.y, 0, this.escala);
+				
+			}
+		} else {
+			if (!this.direccion) {
+				e.dibujarImagen(this.imagen1inv, this.x, this.y, 0, this.escala);
+			}
+			else {
+				e.dibujarImagen(this.imagen2inv, this.x, this.y, 0, this.escala);
+				
+			}
 		}
-		else {
-			e.dibujarImagen(this.imagen2, this.x, this.y, 0, this.escala);
-			
-		}
+		
+		
 	}
 	
 	// Funcion que al ser llamada hace que el personaje aumente su variable y (o sea, visualmente cae) SOLAMENTE si no esta tocando piso
@@ -269,4 +301,21 @@ public class Personaje {
 		return false;
 	
 	}
+	public void iniciarInvulnerabilidad() {
+		this.invulnerabilidad = true;
+		this.tiempoInvulnerabilidad = 65*2;
+	}
+	public void restarTiempoInvulnerabilidad() {
+		if (this.invulnerabilidad == true) {
+			if (this.tiempoInvulnerabilidad > 0) {
+				this.tiempoInvulnerabilidad-=1;
+			}
+			else {
+				this.invulnerabilidad = false;
+			}
+			return;
+		}
+		return;
+	}
+
 }

@@ -6,37 +6,48 @@ import entorno.Entorno;
 
 public class Puntaje {
 	private int valor;
+	private Entorno entorno;
 	private double x;
 	private double y;
 	private int tamañoFuente;
-	private double multiplicador;
+	private int multiplicador;
 	private int tiempo;
+	private int tiempoMuerte;
 	private int racha;
 	private int mejorRacha;
 	private int kills;
+	private int modificadorPuntos;
+	private int modificadorPuntosNegativo;
 	
-	public Puntaje(double x, double y) {
+	public Puntaje(double x, double y, Entorno e) {
 		this.valor = 0;
 		this.tamañoFuente = 24;
 		this.x = x;
 		this.y = y;
 		this.multiplicador = 0;
 		this.tiempo = 0;
+		this.tiempoMuerte = 0;
 		this.racha = 0;
 		this.mejorRacha = 0;
 		this.kills = 0;
-		
+		this.entorno = e;
+		this.modificadorPuntos = 0;
+		this.modificadorPuntosNegativo = 0;
 	}
-	public Puntaje(double x, double y, int tamañoFuente) {
+	public Puntaje(double x, double y, Entorno e, int tamañoFuente) {
 		this.valor = 0;
 		this.tamañoFuente = tamañoFuente;
 		this.x = x;
 		this.y = y;
 		this.multiplicador = 0;
 		this.tiempo = 0;
+		this.tiempoMuerte = 0;
 		this.racha = 0;
 		this.mejorRacha = 0;
 		this.kills = 0;
+		this.entorno = e;
+		this.modificadorPuntos = 0;
+		this.modificadorPuntosNegativo = 0;
 	}
 	
 	
@@ -47,7 +58,10 @@ public class Puntaje {
 		this.valor-=puntos;
 	}
 	public void kill() {
-		this.valor+=50+10*this.multiplicador;
+		int mod = 50+10*this.multiplicador;
+		this.tiempoMuerte = 0;
+		this.modificadorPuntosNegativo = 0;
+		this.valor+=mod;
 		this.multiplicador+=1;
 		this.tiempo = 65*2;
 		this.racha +=1;
@@ -55,10 +69,13 @@ public class Puntaje {
 			this.mejorRacha = this.racha;
 		}
 		this.kills +=1;
+		this.modificadorPuntos+=mod;
 	}
 	public void pierdeVida() {
 		this.tiempo = 0;
 		this.valor -= 250;
+		this.tiempoMuerte = 65*2;
+		this.modificadorPuntosNegativo = 250;
 		
 	}
 	public void resetMultiplicador() {
@@ -71,7 +88,7 @@ public class Puntaje {
 				this.mejorRacha = this.racha;
 			}
 			this.racha = 0;
-			
+			this.modificadorPuntos = 0;
 			return;
 		}
 		this.tiempo -=1;
@@ -96,15 +113,30 @@ public class Puntaje {
 	public void dibujar(Entorno entorno) {
 		
 		Color sombra = new Color(0, 0, 0, 125);
+		Color verdeClaro = new Color(220, 242, 225, 255);
+		Color rojoClaro = new Color(227, 134, 134, 255);
 		entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, sombra);
 		entorno.escribirTexto("PUNTOS: " + this.valor, x+2, y+1);
 		entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, Color.WHITE);
 		entorno.escribirTexto("PUNTOS: " + this.valor, x, y);
 		if (this.multiplicador != 0) {
 			entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, sombra);
-			entorno.escribirTexto("MULTIPLICADOR X" + this.racha, x-34+2, y+26);
+			entorno.escribirTexto("+" + this.modificadorPuntos, x+5+2, y+26);
+			entorno.escribirTexto("(X" + this.racha + ")", x+80+2, y+26);
+			entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, verdeClaro);
+			entorno.escribirTexto("+" + this.modificadorPuntos, x+5, y+25);
 			entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, Color.WHITE);
-			entorno.escribirTexto("MULTIPLICADOR X" + this.racha, x-34, y+25);
+			entorno.escribirTexto("(X" + this.racha + ")", x+80, y+25);
+		}
+		if (this.tiempoMuerte > 0) {
+			entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, sombra);
+			entorno.escribirTexto("-" + this.modificadorPuntosNegativo, x+5+2, y+26);
+			entorno.cambiarFont("Franklin Gothic Medium", this.tamañoFuente, rojoClaro);
+			entorno.escribirTexto("-" + this.modificadorPuntosNegativo, x+5, y+25);
+			this.tiempoMuerte--;
+			if (this.tiempoMuerte <= 0) {
+				this.modificadorPuntosNegativo = 0;
+			}
 		}
 	}
 	

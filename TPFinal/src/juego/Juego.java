@@ -39,7 +39,7 @@ public class Juego extends InterfaceJuego {
 		int cantIslas = 24;
 		this.islas = new Isla[niveles][cantIslas];						// ...
 		this.enemigos = new Enemigo[4][3];					// ...
-		this.puntaje = new Puntaje(entorno.ancho() - 200, 40);
+		this.puntaje = new Puntaje(entorno.ancho() - 200, 40, this.entorno);
 		
 		
 		generarMapa();
@@ -99,7 +99,7 @@ public class Juego extends InterfaceJuego {
 		per.dibujar(entorno); // Dibuja el personaje
 		dibujarIslas(entorno, islas);
 		castillo.dibujar(entorno);	// Dibuja el castillo
-		puntaje.dibujar(entorno);
+		
 
 		
 		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
@@ -194,6 +194,7 @@ public class Juego extends InterfaceJuego {
 			per.setSaltando(false);
 			per.setContSaltos(0);
 		}
+		per.restarTiempoInvulnerabilidad();
 		per.actualizarBordes(); // Llama a la funcion actualizarBordes() del personaje que actualiza sus bordes
 								// constantemente.
 		caidaAlVacio(entorno, per); // Verifica si el personaje cayo al vacio y si es asi le resta una vida.
@@ -236,7 +237,7 @@ public class Juego extends InterfaceJuego {
 		    for (int j = 0; j < enemigos[i].length; j++) {
 		        if (enemigos[i][j] != null) {
 		        	
-		            if (per.colisionCon(enemigos[i][j]) && !enemigos[i][j].isMuerto() && !enemigos[i][j].isMuriendo()) {
+		            if (per.colisionCon(enemigos[i][j]) && !enemigos[i][j].isMuerto() && !enemigos[i][j].isMuriendo() && !per.isInvulnerable()) {
 		            	eliminarCorazon();
 		            	enemigos[i][j].morir();
 		            }
@@ -336,7 +337,7 @@ public class Juego extends InterfaceJuego {
 		     }
 		}
 		dibujarCorazones(entorno, corazones);
-		
+		puntaje.dibujar(entorno);
 	}
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
@@ -416,16 +417,16 @@ public class Juego extends InterfaceJuego {
 	// Funcion que verifica si el jugador perdio.
 	public boolean perdio(Personaje p) {
 		if(p.getVidas() <= 0) {
-			Image fondodif = Herramientas.cargarImagen("fondo-difuminado.png");
+			Image fondodif = Herramientas.cargarImagen("fondo-muerte.png");
 	    	entorno.dibujarImagen(fondodif, entorno.ancho()/2, entorno.alto()/2, 0);
 	    	
 	    	
-	    	Color sombra = new Color(0, 0, 0, 150);
+	    	Color sombra = new Color(0, 0, 0, 180);
 			int tamañoFuente = 70;
 			double y = entorno.alto()/2-100;
 			double x = centrarTextoX("Lucida Console", tamañoFuente, "GAME OVER");
 			entorno.cambiarFont("Lucida Console", tamañoFuente, sombra);
-			entorno.escribirTexto("GAME OVER", x+3, y);
+			entorno.escribirTexto("GAME OVER", x+4, y);
 			entorno.cambiarFont("Lucida Console", tamañoFuente, Color.white);
 			entorno.escribirTexto("GAME OVER", x, y);
 			puntaje.mostrarStats(x, y, "Lucida Console", this.entorno);
@@ -479,17 +480,20 @@ public class Juego extends InterfaceJuego {
 		
 	}
 	
-	public void eliminarCorazon() {
+	public void eliminarCorazon() {			
+			per.perderVida();
+			per.iniciarInvulnerabilidad();
+			puntaje.pierdeVida();
+			
+			boolean terminar = false;
+			for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
+				if (!this.corazones[i].isRoto()) {
+					this.corazones[i].setRoto(true);
+					terminar = true;
+				}
+
+		}
 		
-		per.perderVida();
-		puntaje.pierdeVida();
-	    boolean terminar = false;
-	    for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
-	    	if (!this.corazones[i].isRoto()) {
-	    		this.corazones[i].setRoto(true);
-	    		terminar = true;
-	    	}
-	    }
 	    
 		
 	}

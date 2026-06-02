@@ -10,7 +10,7 @@ import entorno.Herramientas;
 public class Enemigo {
 	private double x, y, ancho, largo, escala, velocidad; 
 	private double techo, piso, bordeD, bordeI;
-	private Image imageI, imageD;
+	private Image imageI, imageD, imageIdañado, imageDdañado;
 	private Entorno e;
 	private boolean direccion, muerto, muriendo;
 	private double tiempoMuerte;
@@ -21,8 +21,10 @@ public class Enemigo {
 		this.y = y;
 		
 		this.escala = 0.6;
-		this.imageD = Herramientas.cargarImagen("1044721_bb417-ezgif.com-crop.gif");
-		this.imageI = Herramientas.cargarImagen("1044721_bb417-ezgif.com-rotate.gif");
+		this.imageD = Herramientas.cargarImagen("dragon.gif");
+		this.imageI = Herramientas.cargarImagen("dragon-rotate.gif");
+		this.imageDdañado = Herramientas.cargarImagen("dragon-dañado.gif");
+		this.imageIdañado = Herramientas.cargarImagen("dragon-dañado-rotate.gif");
 	
 		this.ancho = imageD.getWidth(null);
 		this.largo = imageD.getHeight(null);
@@ -45,9 +47,11 @@ public class Enemigo {
 		this.y = y;
 		
 		this.escala = 0.6;
-		this.imageD = Herramientas.cargarImagen("1044721_bb417-ezgif.com-crop.gif");
-		this.imageI = Herramientas.cargarImagen("1044721_bb417-ezgif.com-rotate.gif");
-	
+		this.imageD = Herramientas.cargarImagen("dragon.gif");
+		this.imageI = Herramientas.cargarImagen("dragon-rotate.gif");
+		this.imageDdañado = Herramientas.cargarImagen("dragon-dañado.gif");
+		this.imageIdañado = Herramientas.cargarImagen("dragon-dañado-rotate.gif");
+		
 		this.ancho = imageD.getWidth(null);
 		this.largo = imageD.getHeight(null);
 		this.ancho *= escala;
@@ -66,13 +70,26 @@ public class Enemigo {
 
 
 	public void dibujar(Entorno e) {
-		if (!this.direccion) {	
-			this.e.dibujarImagen(this.imageI, this.x, this.y, 0, this.escala);
-		}
-		else {	
-			this.e.dibujarImagen(this.imageD, this.x, this.y, 0, this.escala);
-		}
+		
+		if (!this.isMuriendo()) {
+			if (!this.direccion) {	
+				this.e.dibujarImagen(this.imageI, this.x, this.y, 0, this.escala);
+			}
+			else {	
+				this.e.dibujarImagen(this.imageD, this.x, this.y, 0, this.escala);
+			}
 
+		} 
+		else {
+			if (!this.direccion) {	
+				this.e.dibujarImagen(this.imageIdañado, this.x, this.y, Math.toRadians(this.tiempoMuerte*-9+180), this.escala);
+			}
+			else {	
+				this.e.dibujarImagen(this.imageDdañado, this.x, this.y, Math.toRadians(this.tiempoMuerte*-9+180), this.escala);
+			}
+
+		}
+		
 		
 	}
 	public void mover() {
@@ -95,7 +112,7 @@ public class Enemigo {
 	public void morir() {
 		if (!muriendo) {
 			this.muriendo = true;
-			this.tiempoMuerte = 10;
+			this.tiempoMuerte = 20;
 		}
 		else {
 			this.muriendo = false;
