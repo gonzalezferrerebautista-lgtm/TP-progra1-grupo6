@@ -4,9 +4,11 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Image;
 import java.util.Random;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 import entorno.InterfaceJuego;
 
 public class Juego extends InterfaceJuego {
@@ -414,9 +416,16 @@ public class Juego extends InterfaceJuego {
 	// Funcion que verifica si el jugador perdio.
 	public boolean perdio(Personaje p) {
 		if(p.getVidas() <= 0) {
+			Image fondodif = Herramientas.cargarImagen("fondo-difuminado.png");
+	    	entorno.dibujarImagen(fondodif, entorno.ancho()/2, entorno.alto()/2, 0);
+	    	
+	    	
+	    	Color sombra = new Color(0, 0, 0, 150);
 			int tamañoFuente = 70;
 			double y = entorno.alto()/2-100;
 			double x = centrarTextoX("Lucida Console", tamañoFuente, "GAME OVER");
+			entorno.cambiarFont("Lucida Console", tamañoFuente, sombra);
+			entorno.escribirTexto("GAME OVER", x+3, y);
 			entorno.cambiarFont("Lucida Console", tamañoFuente, Color.white);
 			entorno.escribirTexto("GAME OVER", x, y);
 			puntaje.mostrarStats(x, y, "Lucida Console", this.entorno);
@@ -428,9 +437,16 @@ public class Juego extends InterfaceJuego {
 	// Funcion que verifica si el jugador ganó
 	public boolean gano (Personaje p, Castillo c) {
 	    if (p.getX() > c.getBordeI()+70 && p.getY() > c.getTecho()+120 && p.getX() < c.getBordeD()-50 && p.getY() < c.getPiso()) {
-	        int tamañoFuente = 70;
+	        Image fondodif = Herramientas.cargarImagen("fondo-difuminado.png");
+	    	entorno.dibujarImagen(fondodif, entorno.ancho()/2, entorno.alto()/2, 0);
+	    	
+	    	Color sombra = new Color(0, 0, 0, 150);
+	    	
+	    	int tamañoFuente = 70;
 	        double y = entorno.alto()/2-100;
 	        double x = centrarTextoX("Lucida Console", tamañoFuente, "¡GANASTE!");
+	        entorno.cambiarFont("Lucida Console", tamañoFuente, sombra); 
+	        entorno.escribirTexto("¡GANASTE!", x+3, y);
 	        entorno.cambiarFont("Lucida Console", tamañoFuente, Color.white); 
 	        entorno.escribirTexto("¡GANASTE!", x, y);
 	        puntaje.mostrarStats(x, y, "Lucida Console", this.entorno);
@@ -479,7 +495,6 @@ public class Juego extends InterfaceJuego {
 	}
 	
 	public void generarMapa() {
-		double grosorIsla = 45;
 		// Primer piso (con separaciones fijas, fila index 3)
 		double tamañoIsla = 300; // El tamaño de las islas del piso es fijo en 300
 		double yPiso = 700;		// Esta en la altura 650 casi abajo de la pantalla
@@ -488,9 +503,9 @@ public class Juego extends InterfaceJuego {
 		
 		for (int i = 0; i < islas[islas.length-1].length && i < 21; i++) {
 			if (i == islas[islas.length-1].length-1 || i == 20) {
-				tamañoIsla = 800;
+				tamañoIsla = 500;
 			}
-			islas[islas.length-1][i] = new Isla(x, yPiso, tamañoIsla, grosorIsla);
+			islas[islas.length-1][i] = new Isla(x, yPiso, tamañoIsla);
 			x+= tamañoIsla+separacionPiso;
 		}
 		tamañoIsla = 300;
@@ -509,7 +524,7 @@ public class Juego extends InterfaceJuego {
 				if (Math.random() > 0.3) {
 					int r = new Random().nextInt(tamaños.length);
 					int tamaño = tamaños[r];
-					islas[i][j] = new Isla(x, y, tamaño, 45);
+					islas[i][j] = new Isla(x, y, tamaño);
 					
 					int separacion = new Random().nextInt(75)+tamaño+135;
 					x += separacion;

@@ -233,7 +233,7 @@ public class Personaje {
 		if (is == null) {
 			return false;
 		}
-	    return Math.abs(this.techo - is.getPiso()) <= 10 && 
+	    return Math.abs(this.techo - is.getPiso()) <= 15 && 
 	           this.bordeI < is.getBordeD() && 
 	           this.bordeD > is.getBordeI();
 	}

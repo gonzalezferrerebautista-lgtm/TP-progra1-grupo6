@@ -1,20 +1,24 @@
 package juego;
 
 import java.awt.Color;
+import java.awt.Image;
 
 import entorno.Entorno;
+import entorno.Herramientas;
 
 public class Isla {
 	private double x;
 	private double y;
 	private double ancho;
 	private double largo;
+	private double tamaño;
 	private double escala;
 	private Color color;
 	private double techo;
 	private double piso;
 	private double bordeD;
 	private double bordeI;
+	private Image imagen;
 	
 	public double getX() {
 		return x;
@@ -102,29 +106,47 @@ public class Isla {
 		this.y += y;
 	}
 
-	public Isla(double x, double y, double ancho, double largo) {
+	public Isla(double x, double y, double tamañoIsla) {
 		this.x =x;
 		this.y =y;
-		this.ancho= ancho;
-		this.largo = largo;
-		this.escala= 1;
+		this.escala= 0.2;
+		this.tamaño = tamañoIsla;
+		if (this.tamaño == 300) {
+			this.imagen = Herramientas.cargarImagen("isla300.png");
+		}
+		else if (this.tamaño == 220) {
+			this.imagen = Herramientas.cargarImagen("isla220.png");
+		}
+		else if (this.tamaño == 150) {
+			this.imagen = Herramientas.cargarImagen("isla150.png");
+		}
+		else if (this.tamaño == 500) {
+			this.imagen = Herramientas.cargarImagen("islafinal.png");
+		}
+		else {
+			this.imagen = Herramientas.cargarImagen("isla150.png");
+		}
+		this.ancho = this.imagen.getWidth(null);
+		this.largo = this.imagen.getHeight(null);
+		this.ancho *= escala;
+		this.largo *= escala;
 		this.color = new Color(64, 30, 9);
-		this.techo = this.y-this.largo/2;
-		this.piso = this.y+this.largo/2;
-		this.bordeD = this.x+this.ancho/2;
-		this.bordeI = this.x-this.ancho/2;
+		this.techo = this.y-this.largo/2+4;
+		this.piso = this.y+this.largo/2-15;
+		this.bordeD = this.x+this.ancho/2-5;
+		this.bordeI = this.x-this.ancho/2+5;
 		
 	}
 	
 	public void dibujar(Entorno e) {
-		e.dibujarRectangulo(x, y, ancho, largo, 0, color);
+		e.dibujarImagen(imagen, x, y, 0, this.escala);
 	}
 	
 	public void actualizarBordes() {
-		this.techo = (int) (this.y-this.largo/2);
-		this.piso = (int) (this.y+this.largo/2);
-		this.bordeD = (int) (this.x+this.ancho/2);
-		this.bordeI = (int) (this.x-this.ancho/2);
+		this.techo = this.y-this.largo/2+4;
+		this.piso = this.y+this.largo/2-15;
+		this.bordeD = this.x+this.ancho/2-5;
+		this.bordeI = this.x-this.ancho/2+5;
 		
 		
 	}

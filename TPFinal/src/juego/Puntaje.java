@@ -81,13 +81,16 @@ public class Puntaje {
 		mostrarStats(x, y, "Arial", e);
 	}
 	public void mostrarStats(double x, double y, String fuente, Entorno e) {
+		Color sombra = new Color(0, 0, 0, 150);
+		e.cambiarFont(fuente, this.tamañoFuente, sombra);
+		e.escribirTexto("PUNTOS: " + this.valor, x+2, y+100);
+		e.escribirTexto("KILLS: " + this.kills, x+2, y+130);
+		e.escribirTexto("MEJOR RACHA: " + this.mejorRacha, x+2, y+160);
+		
 		e.cambiarFont(fuente, this.tamañoFuente, Color.white);
-		y += 100;
-		e.escribirTexto("PUNTOS: " + this.valor, x, y);
-		y += 30;
-		e.escribirTexto("KILLS: " + this.kills, x, y);
-		y += 30;
-		e.escribirTexto("MEJOR RACHA: " + this.mejorRacha, x, y);
+		e.escribirTexto("PUNTOS: " + this.valor, x, y+100);
+		e.escribirTexto("KILLS: " + this.kills, x, y+130);
+		e.escribirTexto("MEJOR RACHA: " + this.mejorRacha, x, y+160);
 	}
 	
 	public void dibujar(Entorno entorno) {
