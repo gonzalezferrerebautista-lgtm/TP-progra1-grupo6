@@ -22,7 +22,7 @@ public class Castillo {
 		this.x = x;
 		this.y = y;
 		
-		this.escala = 0.6;
+		this.escala = 0.8;
 		this.imagenCas = Herramientas.cargarImagen("imagenCastillo.png");
 		
 		// El "imagenCas" se usa para saber el tamaño original de la foto
@@ -63,11 +63,17 @@ public class Castillo {
 	public double getBordeI() {
 	    return this.bordeI;
 	}
+	public double getBordeD() {
+	    return this.bordeD;
+	}
 
 	public double getTecho() {
 	    return this.techo;
 	}
-		
+	public double getPiso() {
+	    return this.piso;
+	}
+			
 	public double getY() {
 	    return this.y;
 	}

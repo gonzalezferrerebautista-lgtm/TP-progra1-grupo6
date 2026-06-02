@@ -129,6 +129,7 @@ public class Enemigo {
 		
 	}
 	
+
 	public double getX() {
 		return x;
 	}

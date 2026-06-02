@@ -1,6 +1,9 @@
 package juego;
 
+import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.util.Random;
 
 import entorno.Entorno;
@@ -20,6 +23,7 @@ public class Juego extends InterfaceJuego {
 	Isla[][] islas;
 	Enemigo[][] enemigos;
 	Castillo castillo;	
+	Puntaje puntaje;
 	
 
 	Juego() {
@@ -30,9 +34,10 @@ public class Juego extends InterfaceJuego {
 		this.per = new Personaje(entorno); 					// Inicializamos el personaje
 		this.fon = new Fondo(entorno); 						// Inicializamos el fondo
 		int niveles = 4;
-		int cantIslas = 21;
+		int cantIslas = 24;
 		this.islas = new Isla[niveles][cantIslas];						// ...
 		this.enemigos = new Enemigo[4][3];					// ...
+		this.puntaje = new Puntaje(entorno.ancho() - 200, 40);
 		
 		
 		generarMapa();
@@ -40,12 +45,18 @@ public class Juego extends InterfaceJuego {
 		// Obtengo la posicion de esa ultima isla y guardamos las coordenadas
 		
 		
-		double x = islas[niveles-1][cantIslas-1].getX();
-		double y = islas[niveles-1][cantIslas-1].getY();
+		double x;
+		if (islas[niveles-1].length > 21) {
+			x = islas[niveles-1][20].getX();
+		} else {
+			
+			x = islas[niveles-1][islas[niveles-1].length-1].getX();
+		}
+		double y = islas[niveles-1][0].getY();
 		
 		// Creo/inicializo el objeto castillo
 
-		this.castillo = new Castillo(x, y - 200, entorno);		// ese "- algo" sirve para subir el objeto
+		this.castillo = new Castillo(x, y-250, entorno);		// ese "- algo" sirve para subir el objeto
 		
 		
 		// Se inicializan los corazones segun la cantidad de vidas del personaje.
@@ -86,12 +97,15 @@ public class Juego extends InterfaceJuego {
 		per.dibujar(entorno); // Dibuja el personaje
 		dibujarIslas(entorno, islas);
 		castillo.dibujar(entorno);	// Dibuja el castillo
-		
+		puntaje.dibujar(entorno);
 
 		
 		for (int i = 0; i < enemigos.length; i++) { // Recorre los niveles
 			
 			for (int j = 0; j < enemigos[i].length; j++) {
+				
+				
+				
 				
 				if (enemigos[i][j] != null) {					
 					
@@ -106,21 +120,52 @@ public class Juego extends InterfaceJuego {
 						enemigos[i][j] = null;
 					}
 				}
-				else if (Math.random() < 0.002) {
-	
+				else if (Math.random() < 0.003) {
+					boolean posicionInicioValida = true;		
+					boolean posicionFinalValida = true;		
+					
+					int k = 0;
+					while (k < enemigos[i].length) {
+						if (enemigos[i][k] != null) {
+		                    double xExistente = enemigos[i][k].getX();
+		                    
+		                    // Si la distancia absoluta es menor al mínimo, no sirve
+		                    if (Math.abs(0 - xExistente) < enemigos[i][k].getAncho()+30 && enemigos[i][k].isDireccion() == true) {
+		                        posicionInicioValida = false; 
+		                    }
+		                    if (Math.abs(this.entorno.ancho() - xExistente) < enemigos[i][k].getAncho()+30 && enemigos[i][k].isDireccion() == false) {
+		                    	posicionFinalValida = false; 
+		                    }
+		                }
+						k++;
+					}
+
 					double x;
 					boolean dir;
-					if (Math.random() > 0.8) {
+					int y = 90+180*i;
+					if (posicionInicioValida && posicionFinalValida) {
+						
+						if (Math.random() > 0.7) {
+							x = 0;
+							dir = true;
+						}
+						else {
+							x = this.entorno.ancho();
+							dir = false;
+						}
+						this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
+						
+					}
+					else if (posicionInicioValida) {
 						x = 0;
 						dir = true;
+						this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
 					}
-					else {
+					else if (posicionFinalValida) {
 						x = this.entorno.ancho();
 						dir = false;
-					}
-					int y = 90+180*i;
-					this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
-				
+						this.enemigos[i][j] = new Enemigo(x, y, this.entorno, dir);
+					}					
 				}
 			}
 		}
@@ -139,7 +184,6 @@ public class Juego extends InterfaceJuego {
 		        }
 		    }
 		}
-		System.out.println(this.castillo.getY());
 		if (!golpeoTecho) {			
 			per.salto(); // Llama a la funcion salto() del personaje que verifica si esta en un salto y
 			// hace que se eleve.
@@ -169,7 +213,7 @@ public class Juego extends InterfaceJuego {
 		}
 
 		limite(per, islas, fon);
-		
+		puntaje.resetMultiplicador();
 		
 		boolean puedeMoverDerecha = true;
 		boolean puedeMoverIzquierda = true;
@@ -268,6 +312,7 @@ public class Juego extends InterfaceJuego {
 									);
 
 							enemigos[i][j].morir();
+							this.puntaje.kill();
 							
 							proyectil = null;           //elimina la bala y corta el loop
 							impacto = true;
@@ -289,6 +334,7 @@ public class Juego extends InterfaceJuego {
 		     }
 		}
 		dibujarCorazones(entorno, corazones);
+		
 	}
 	@SuppressWarnings("unused")
 	public static void main(String[] args) {
@@ -369,8 +415,11 @@ public class Juego extends InterfaceJuego {
 	public boolean perdio(Personaje p) {
 		if(p.getVidas() <= 0) {
 			int tamañoFuente = 70;
-			entorno.cambiarFont("Arial", tamañoFuente, Color.white);
-			entorno.escribirTexto("PERDISTE", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+			double y = entorno.alto()/2-100;
+			double x = centrarTextoX("Lucida Console", tamañoFuente, "GAME OVER");
+			entorno.cambiarFont("Lucida Console", tamañoFuente, Color.white);
+			entorno.escribirTexto("GAME OVER", x, y);
+			puntaje.mostrarStats(x, y, "Lucida Console", this.entorno);
 			return true;
 		}
 		return false;
@@ -378,11 +427,13 @@ public class Juego extends InterfaceJuego {
 	
 	// Funcion que verifica si el jugador ganó
 	public boolean gano (Personaje p, Castillo c) {
-	    // Corregido: cambiamos 'castillo' por 'c'
-	    if (p.getX() > c.getBordeI() && p.getY() > c.getTecho()) {
+	    if (p.getX() > c.getBordeI()+70 && p.getY() > c.getTecho()+120 && p.getX() < c.getBordeD()-50 && p.getY() < c.getPiso()) {
 	        int tamañoFuente = 70;
-	        entorno.cambiarFont("Arial", tamañoFuente, Color.white);
-	        entorno.escribirTexto("¡GANASTE!", entorno.ancho()/2-tamañoFuente*2.8, entorno.alto()/2);
+	        double y = entorno.alto()/2-100;
+	        double x = centrarTextoX("Lucida Console", tamañoFuente, "¡GANASTE!");
+	        entorno.cambiarFont("Lucida Console", tamañoFuente, Color.white); 
+	        entorno.escribirTexto("¡GANASTE!", x, y);
+	        puntaje.mostrarStats(x, y, "Lucida Console", this.entorno);
 	        return true;
 	    }
 	    return false;
@@ -415,6 +466,7 @@ public class Juego extends InterfaceJuego {
 	public void eliminarCorazon() {
 		
 		per.perderVida();
+		puntaje.pierdeVida();
 	    boolean terminar = false;
 	    for(int i = this.corazones.length-1; i >= 0 && terminar == false; i--) {
 	    	if (!this.corazones[i].isRoto()) {
@@ -434,9 +486,9 @@ public class Juego extends InterfaceJuego {
 		double separacionPiso = 160;	// La separacion del piso es 
 		double x = 200;	// La primera isla aparece en las coordenadas x del jugador
 		
-		for (int i = 0; i < islas[islas.length-1].length; i++) {
-			if (i == islas[islas.length-1].length-1) {
-				tamañoIsla = 500;
+		for (int i = 0; i < islas[islas.length-1].length && i < 21; i++) {
+			if (i == islas[islas.length-1].length-1 || i == 20) {
+				tamañoIsla = 800;
 			}
 			islas[islas.length-1][i] = new Isla(x, yPiso, tamañoIsla, grosorIsla);
 			x+= tamañoIsla+separacionPiso;
@@ -459,7 +511,7 @@ public class Juego extends InterfaceJuego {
 					int tamaño = tamaños[r];
 					islas[i][j] = new Isla(x, y, tamaño, 45);
 					
-					int separacion = new Random().nextInt(100)+tamaño+110;
+					int separacion = new Random().nextInt(75)+tamaño+135;
 					x += separacion;
 					
 				}
@@ -471,6 +523,14 @@ public class Juego extends InterfaceJuego {
 			
 		}
 		
+	}
+
+	public double centrarTextoX(String fuente, int tamañoFuente, String texto) {
+		Font font = new Font(fuente, Font.PLAIN, tamañoFuente); // Creamos un objeto Font idéntico con Java AWT nativo
+        Canvas auxiliar = new Canvas(); // Usamos un Canvas auxiliar para obtener las métricas reales de la fuente (sacado de internet)
+        FontMetrics metrics = auxiliar.getFontMetrics(font);
+        int anchoTexto = metrics.stringWidth(texto); // Calculamos el ancho exacto que el texto va a ocupar en pantalla (en píxeles)
+        return (this.entorno.ancho() - anchoTexto) / 2.0;  // Calculamos la coordenada X para que quede perfectamente centrado
 	}
 
 }
