@@ -28,7 +28,7 @@ public class Personaje {
 	private boolean invulnerabilidad;
 	private int tiempoInvulnerabilidad;
 	
-	public Personaje(Entorno e) {
+	public Personaje(Entorno e, int vidas) {
 		// Inicializo todas las variables de instancia.
 		this.entorno = e; // Entorno
 		// Ubicacion del personaje
@@ -54,7 +54,7 @@ public class Personaje {
 		this.estaTocandoPiso = false;
 		this.saltando = false;
 		this.contSaltos = 0;
-		this.vidas = 5;
+		this.vidas = vidas;
 		this.invulnerabilidad = false;
 		this.tiempoInvulnerabilidad = 0;
 	}
@@ -251,6 +251,11 @@ public class Personaje {
 	    vidas--;
 
 	}
+	public void sumarVida() {
+		
+		vidas++;
+		
+	}
 	
 	public boolean seApoyaEn(Isla is) {
 		if (is == null) {
@@ -293,7 +298,7 @@ public class Personaje {
 			return false;
 		}
 		if (this.bordeD > enemigo.getBordeI()
-			&& this.bordeI < enemigo.getBordeD()                 //compara límites del proyectil  contra límites de la isla
+			&& this.bordeI < enemigo.getBordeD()                
 			&& this.piso > enemigo.getTecho()
 			&& this.techo < enemigo.getPiso()) {
 			return true;
@@ -301,9 +306,26 @@ public class Personaje {
 		return false;
 	
 	}
+	public boolean colisionCon(Item item) {
+		if (item == null) {
+			return false;
+		}
+		if (item.getX() + item.getRadio() > this.getBordeI()
+		        && item.getX() - item.getRadio() < this.getBordeD()               
+		        && item.getY() + item.getRadio() > this.getTecho()
+		        && item.getY() - item.getRadio() < this.getPiso()) {
+			return true;
+		}
+		return false;
+	
+	}
 	public void iniciarInvulnerabilidad() {
+		iniciarInvulnerabilidad(100);
+	}
+	public void iniciarInvulnerabilidad(int tiempo) {
 		this.invulnerabilidad = true;
-		this.tiempoInvulnerabilidad = 65*2;
+		this.tiempoInvulnerabilidad = tiempo;
+		
 	}
 	public void restarTiempoInvulnerabilidad() {
 		if (this.invulnerabilidad == true) {

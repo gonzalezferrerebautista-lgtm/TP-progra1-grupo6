@@ -105,7 +105,7 @@ public class Enemigo {
 	public boolean fueraDePantalla(Entorno entorno) {
 	    return x < 0-80 ||
 	           x > entorno.ancho()+120 ||
-	           y < 0-120 ||                         //sirve para eliminar proyectiles viejos.
+	           y < 0-120 ||                       
 	           y > entorno.alto()+120;
 	}
 	
@@ -121,7 +121,7 @@ public class Enemigo {
 		}
 	}
 	
-	public void muriendo() {
+	public void estaMuriendo() {
 		if (this.muriendo && this.tiempoMuerte > 0) {							
 			this.tiempoMuerte-=1;
 			moverY(30);
@@ -135,7 +135,16 @@ public class Enemigo {
 		}
 		
 	}
-	
+	public boolean colisionaCon(Isla isla) {
+	    if (isla == null) {
+	        return false;
+	    }
+
+	    return this.bordeD > isla.getBordeI()
+	        && this.bordeI < isla.getBordeD()                 
+	        && this.piso > isla.getTecho()
+	        && this.techo < isla.getPiso();
+	}
 	
 	public void actualizarBordes() {
 		this.techo = (int) (this.y-this.largo/2);

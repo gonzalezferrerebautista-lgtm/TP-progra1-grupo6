@@ -99,12 +99,12 @@ public class Puntaje {
 	}
 	public void mostrarStats(double x, double y, String fuente, Entorno e) {
 		Color sombra = new Color(0, 0, 0, 150);
-		e.cambiarFont(fuente, this.tamañoFuente, sombra);
+		e.cambiarFont(fuente, this.tamañoFuente+4, sombra);
 		e.escribirTexto("PUNTOS: " + this.valor, x+2, y+100);
 		e.escribirTexto("KILLS: " + this.kills, x+2, y+130);
 		e.escribirTexto("MEJOR RACHA: " + this.mejorRacha, x+2, y+160);
 		
-		e.cambiarFont(fuente, this.tamañoFuente, Color.white);
+		e.cambiarFont(fuente, this.tamañoFuente+4, Color.white);
 		e.escribirTexto("PUNTOS: " + this.valor, x, y+100);
 		e.escribirTexto("KILLS: " + this.kills, x, y+130);
 		e.escribirTexto("MEJOR RACHA: " + this.mejorRacha, x, y+160);

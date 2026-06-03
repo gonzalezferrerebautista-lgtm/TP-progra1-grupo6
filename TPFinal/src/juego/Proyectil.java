@@ -16,11 +16,11 @@ public class Proyectil {
     
     private double angulo;
     
-    private double radio = 10;             //agrego unos bordes
+    private double radio;             
 	
 	public Proyectil(double xInicial, double yInicial,
             double mouseX, double mouseY) {
-
+		this.radio = 10;//agrego unos bordes
 		this.x = xInicial;
 		this.y = yInicial;
 
