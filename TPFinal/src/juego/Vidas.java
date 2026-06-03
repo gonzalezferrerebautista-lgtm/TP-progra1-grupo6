@@ -7,32 +7,7 @@ import entorno.Herramientas;
 public class Vidas {
 
 	private Image imagen1;
-	private  Image imagen2;
-
-	public double getX() {
-		return x;
-	}
-
-	public void setX(double x) {
-		this.x = x;
-	}
-
-	public double getY() {
-		return y;
-	}
-
-	public void setY(double y) {
-		this.y = y;
-	}
-
-	public boolean isRoto() {
-		return roto;
-	}
-
-	public void setRoto(boolean roto) {
-		this.roto = roto;
-	}
-
+	private Image imagen2;
 	private double x;
 	private double y;
 	private boolean roto;
@@ -55,6 +30,29 @@ public class Vidas {
     	}
     	entorno.dibujarImagen(this.imagen1, this.x, this.y, 0, 0.06);
 
+    }
+    public double getX() {
+    	return x;
+    }
+    
+    public void setX(double x) {
+    	this.x = x;
+    }
+    
+    public double getY() {
+    	return y;
+    }
+    
+    public void setY(double y) {
+    	this.y = y;
+    }
+    
+    public boolean isRoto() {
+    	return roto;
+    }
+    
+    public void setRoto(boolean roto) {
+    	this.roto = roto;
     }
 
 }

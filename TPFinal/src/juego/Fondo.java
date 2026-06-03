@@ -14,6 +14,25 @@ public class Fondo {
 	private double bordeD;
 	private Image imagen;
 	
+	public Fondo(Entorno e) {
+		this.imagen = Herramientas.cargarImagen("fondo.png");
+		this.ancho = imagen.getWidth(null);
+		this.alto = imagen.getHeight(null);
+		this.x = this.ancho/2;
+		this.y = this.alto/2-100;
+		
+		this.escala = e.alto()/this.alto*1.2;
+		
+		this.ancho = imagen.getWidth(null)*escala;
+		this.alto = imagen.getHeight(null)*escala;
+		this.x = this.ancho/2;
+		this.y = this.alto/2-100;
+		
+		
+	}
+	public void dibujar(Entorno e) {
+		e.dibujarImagen(this.imagen, this.x, this.y, 0, this.escala);
+	}
 	public double getX() {
 		return x;
 	}
@@ -50,30 +69,11 @@ public class Fondo {
 	public void setBordeD(double bordeD) {
 		this.bordeD = bordeD;
 	}
-
+	
 	public void moverX(double x) {
 		this.x += x;
 	}
 	public void moverY(double y) {
 		this.y += y;
-	}
-	public Fondo(Entorno e) {
-		this.imagen = Herramientas.cargarImagen("fondo.png");
-		this.ancho = imagen.getWidth(null);
-		this.alto = imagen.getHeight(null);
-		this.x = this.ancho/2;
-		this.y = this.alto/2-100;
-		
-		this.escala = e.alto()/this.alto*1.2;
-		
-		this.ancho = imagen.getWidth(null)*escala;
-		this.alto = imagen.getHeight(null)*escala;
-		this.x = this.ancho/2;
-		this.y = this.alto/2-100;
-		
-		
-	}
-	public void dibujar(Entorno e) {
-		e.dibujarImagen(this.imagen, this.x, this.y, 0, this.escala);
 	}
 }
